@@ -1,0 +1,60 @@
+# From https://github.com/giantswarm/apiextensions/blob/4b6cd0909e65326ee7b7daddcc0ce6b5e69ceaf4/pkg/apis/application/v1alpha1/app_catalog_types.go#L14-L72
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: appcatalogs.application.giantswarm.io
+spec:
+  group: application.giantswarm.io
+  scope: Cluster
+  version: v1alpha1
+  names:
+    kind: AppCatalog
+    plural: appcatalogs
+    singular: appcatalog
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            config:
+              type: object
+              properties:
+                configMap:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                    resourceVersion:
+                      type: string
+                  required: ["name", "namespace"]
+                secret:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                    resourceVersion:
+                      type: string
+                  required: ["name", "namespace"]
+            logoURL:
+              type: string
+            storage:
+              type: object 
+              properties:
+                type:
+                  type: string
+                URL:
+                  type: string
+                  format: uri 
+              required: ["type", "URL"]
+          required: ["title", "description", "storage"]
