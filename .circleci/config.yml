@@ -13,6 +13,7 @@ jobs:
           wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
           chmod +x ./architect
           ./architect version
+
     - run:
         name: Build using architect
         command: ./architect build
