@@ -1,0 +1,59 @@
+---
+title: {{ .title }} CRD Schema Reference
+linktitle: {{ .title }}
+description: >
+  Custom Resource/Custom Resource Definition schema reference page
+  for the {{ .title }} resource ({{ .namePlural }}.{{ .group }}),
+  as part of the Giant Swarm Control Plane Kubernetes API documentation.
+date: {{ .date }}
+weight: {{ .weight }}
+---
+
+# {{ .title }}
+
+{{ with .description }}
+<p class="crd-description">{{ . }}</p>
+{{ end -}}
+
+<dl class="crd-meta">
+<dt class="fullname">Full name:</dt>
+<dd class="fullname">{{ .namePlural }}.{{ .group }}</dd>
+<dt class="groupname">Group:</dt>
+<dd class="groupname">{{ .group }}</dd>
+<dt class="version">Version:</dt>
+<dd class="version">{{ .version }}</dd>
+<dt class="singularname">Singular name:</dt>
+<dd class="singularname">{{ .nameSingular }}</dd>
+<dt class="pluralname">Plural name:</dt>
+<dd class="pluralname">{{ .namePlural }}</dd>
+<dt class="scope">Scope:</dt>
+<dd class="scope">{{ .scope }}</dd>
+</dl>
+
+## Schema
+
+{{ range .properties }}
+<div class="property depth-{{.Depth}}" id="{{.Path}}">
+<div class="property-header">
+<h3 class="property-path">{{.Path}}</h3>
+</div>
+<div class="property-body">
+<div class="property-meta">
+{{with .Type}}<span class="property-type">{{.}}</span>{{end}}
+{{ if not .Required }}
+{{ else }}
+<span class="property-required">Required</span>
+{{ end }}
+</div>
+{{with .Description}}
+<div class="property-description">
+{{.|markdown}}
+</div>
+{{end}}
+</div>
+</div>
+{{ end }}
+
+## Example CR
+
+TODO: Show example CR
