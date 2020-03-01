@@ -16,7 +16,9 @@ jobs:
     - run:
         name: Build using architect
         command: ./architect build
+
     - deploy:
+        name: architect deploy when branch is master
         command: |
           if [ "${CIRCLE_BRANCH}" == "master" ]; then
             ./architect deploy
