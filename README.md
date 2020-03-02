@@ -18,8 +18,8 @@ The Docker version can be executed like this:
 
 ```nohighlight
 docker run \
-    -v ./path/to/output-folder:/opt/crd-docs-generator/output \
-    quay.io/repository/giantswarm/crd-docs-generator
+    -v $PWD/path/to/output-folder:/opt/crd-docs-generator/output \
+    quay.io/giantswarm/crd-docs-generator
 ```
 
 ## TODO
@@ -27,3 +27,4 @@ docker run \
 - Have a main description for each CRD's purpose
 - Support multiple schemas in `.spec.versions` (e. g. `awscontrolplane.yaml`. `g8scontrolplanes.yaml`) as an alternative to one spec in `.spec.validation`
 - Show CR example
+- Date in front matter should ideally reflect last modification, not docs generation

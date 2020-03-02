@@ -1,6 +1,7 @@
 ---
 title: {{ .title }} CRD Schema Reference
 linktitle: {{ .title }}
+technical_name: {{ .namePlural }}.{{ .group }}
 description: >
   Custom Resource/Custom Resource Definition schema reference page
   for the {{ .title }} resource ({{ .namePlural }}.{{ .group }}),
