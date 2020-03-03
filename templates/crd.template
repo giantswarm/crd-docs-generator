@@ -2,10 +2,11 @@
 title: {{ .Title }} CRD Schema Reference
 linktitle: {{ .Title }}
 technical_name: {{ .NamePlural }}.{{ .Group }}
-description: >
-  Custom Resource/Custom Resource Definition schema reference page
-  for the {{ .Title }} resource ({{ .NamePlural }}.{{ .Group }}),
-  as part of the Giant Swarm Control Plane Kubernetes API documentation.
+description: {{ if .Description -}}
+{{- .Description -}}
+{{- else -}}
+Custom Resource/Custom Resource Definition schema reference page for the {{ .Title }} resource ({{ .NamePlural }}.{{ .Group }}), as part of the Giant Swarm Control Plane Kubernetes API documentation.
+{{ end -}}
 date: {{ .Date }}
 weight: {{ .Weight }}
 ---

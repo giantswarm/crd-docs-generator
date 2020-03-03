@@ -221,6 +221,7 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile
 	//
 	if crd.Spec.Validation != nil {
 		// Case A: CRD contains only one version defined as .spec.version.
+		data.Description = crd.Spec.Validation.OpenAPIV3Schema.Description
 
 		// Create flat attribute list from hierarchy.
 		var properties []SchemaProperty
@@ -243,8 +244,19 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile
 
 	} else if len(crd.Spec.Versions) > 0 {
 		// Case B: CRD contains multiple versions and schemas.
-
 		for _, version := range crd.Spec.Versions {
+			if !version.Served && !version.Storage {
+				// Neither stored nore served means that this version
+				// can be skipped.
+				continue
+			}
+
+			// Get the first non-empty top level description and use it as the
+			// CRD description.
+			if data.Description == "" {
+				data.Description = version.Schema.OpenAPIV3Schema.Description
+			}
+
 			var properties []SchemaProperty
 			properties = flattenProperties(version.Schema.OpenAPIV3Schema, properties, 0, "")
 

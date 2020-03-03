@@ -29,6 +29,11 @@ spec:
     storage: true
     schema:
       openAPIV3Schema:
+        description: |
+          This is a placeholder description of the AWSControlPlane CRD. It should briefly
+          explain the purpose of the CRD, mention the operator owning it, may also state
+          the provider where it is in use and say with which release it has been introduced
+          or phased out.
         properties:
           spec:
             type: object
