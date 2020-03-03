@@ -36,8 +36,7 @@ weight: {{ .Weight }}
 </dl>
 
 {{ range $versionName, $versionSchema := .VersionSchemas }}
-
-<div id="{{$versionName}}">
+<div class="crd-schema-version" id="{{$versionName}}">
 <h2>Schema for version {{$versionName}}</h2>
 
 {{ range $versionSchema.Properties }}

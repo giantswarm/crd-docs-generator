@@ -25,7 +25,6 @@ docker run \
 ## TODO
 
 - Have a main description for each CRD's purpose
-- Support multiple schemas in `.spec.versions` (e. g. `awscontrolplane.yaml`. `g8scontrolplanes.yaml`) as an alternative to one spec in `.spec.validation`
-- Show CR example
+- Show CR example (per version)
 - Date in front matter should ideally reflect last modification, not docs generation
 - Parse template only once instead of for every CRD
