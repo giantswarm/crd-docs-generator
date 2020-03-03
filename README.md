@@ -28,3 +28,4 @@ docker run \
 - Support multiple schemas in `.spec.versions` (e. g. `awscontrolplane.yaml`. `g8scontrolplanes.yaml`) as an alternative to one spec in `.spec.validation`
 - Show CR example
 - Date in front matter should ideally reflect last modification, not docs generation
+- Parse template only once instead of for every CRD

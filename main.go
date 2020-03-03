@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/ghodss/yaml"
@@ -83,6 +84,26 @@ type SchemaProperty struct {
 	Description string
 	// Required specifies whether the property is required.
 	Required bool
+}
+
+type OutputData struct {
+	Date         string
+	Description  string
+	Group        string
+	NamePlural   string
+	NameSingular string
+	Scope        string
+	Title        string
+	Weight       int
+	// Version names.
+	Versions []string
+	// Schema per version.
+	VersionSchemas map[string]OutputSchemaVersion
+}
+
+type OutputSchemaVersion struct {
+	Version    string
+	Properties []SchemaProperty
 }
 
 // ReadCRD parses a CRD YAML file and creates markdown documentation.
@@ -166,29 +187,41 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile
 		return microerror.Mask(err)
 	}
 
-	// Add the custom "| markdown" function to our template.
+	// Add custom functions support for our template.
 	funcMap := template.FuncMap{
 		// Treat given test as Markdown and convert to HTML.
 		"markdown": toMarkdown,
+		// Join strings by separator
+		"join": strings.Join,
 	}
 
 	// Read our output template.
 	tpl := template.Must(template.New("schemapage").Funcs(funcMap).Parse(string(templateCode)))
 
 	// Collect values to pass to our output template.
-	data := make(map[string]interface{})
+	data := OutputData{
+		// Current date as page creation date for the front matter
+		Date:           time.Now().Format("2006-01-02"),
+		Group:          crd.Spec.Group,
+		NamePlural:     crd.Spec.Names.Plural,
+		NameSingular:   crd.Spec.Names.Singular,
+		Scope:          string(crd.Spec.Scope),
+		Title:          crd.Spec.Names.Kind,
+		Weight:         100,
+		VersionSchemas: make(map[string]OutputSchemaVersion),
+	}
 
-	// Current date as page creation date for the fron matter
-	data["date"] = time.Now().Format("2006-01-02")
-	data["weight"] = 100
-	data["title"] = crd.Spec.Names.Kind
-	data["group"] = crd.Spec.Group
-	data["version"] = crd.Spec.Version
-	data["nameSingular"] = crd.Spec.Names.Singular
-	data["namePlural"] = crd.Spec.Names.Plural
-	data["scope"] = crd.Spec.Scope
-
+	// We handle two very different cases here and bring them to a unififed output structure.
+	//
+	// A: CRD contains only one version defined as .spec.version and .spec.validation contains
+	// the schema.
+	//
+	// B: CRD contains multiple schemas under .spec.versions[*] and schema under
+	// .spec.versions[*].schema
+	//
 	if crd.Spec.Validation != nil {
+		// Case A: CRD contains only one version defined as .spec.version.
+
 		// Create flat attribute list from hierarchy.
 		var properties []SchemaProperty
 		properties = flattenProperties(crd.Spec.Validation.OpenAPIV3Schema, properties, 0, "")
@@ -197,9 +230,33 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile
 		sort.Slice(properties, func(i, j int) bool {
 			return properties[i].Path < properties[j].Path
 		})
-		data["properties"] = properties
+
+		if crd.Spec.Version != "" {
+			data.Versions = []string{crd.Spec.Version}
+			data.VersionSchemas[crd.Spec.Version] = OutputSchemaVersion{
+				Version:    crd.Spec.Version,
+				Properties: properties,
+			}
+		} else {
+			fmt.Printf("WARNING: %s.%s does not have a .spec.version. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
+		}
+
+	} else if len(crd.Spec.Versions) > 0 {
+		// Case B: CRD contains multiple versions and schemas.
+
+		for _, version := range crd.Spec.Versions {
+			var properties []SchemaProperty
+			properties = flattenProperties(version.Schema.OpenAPIV3Schema, properties, 0, "")
+
+			data.VersionSchemas[version.Name] = OutputSchemaVersion{
+				Version:    version.Name,
+				Properties: properties,
+			}
+
+			data.Versions = append(data.Versions, version.Name)
+		}
 	} else {
-		fmt.Printf("WARNING: %s.%s does not have an OpenAPIv3 validation schema. Can't produce the expected schema output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
+		fmt.Printf("WARNING: %s.%s does not have an OpenAPIv3 validation schema. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
 	}
 
 	handler, err := os.Create(outputFile)
@@ -209,7 +266,11 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile
 
 	err = tpl.Execute(handler, data)
 	if err != nil {
-		return microerror.Mask(err)
+
+		// TODO: return error
+		//return microerror.Mask(err)
+
+		fmt.Printf("%s: %s\n", outputFile, err)
 	}
 
 	return nil
@@ -218,16 +279,17 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile
 func main() {
 	for _, config := range config {
 		inputFile := inputFolderPath + "/" + config.FileNamePrefix + ".yaml"
-		crd, err := ReadCRD(inputFile)
 
+		crd, err := ReadCRD(inputFile)
 		if err != nil {
-			fmt.Printf("Something went wrong: %#v", err)
+			fmt.Printf("Something went wrong in ReadCRD: %#v", err)
 		}
 
 		outputFile := outputFolderPath + "/" + config.FileNamePrefix + ".md"
+
 		err = WriteCRDDocs(crd, outputFile)
 		if err != nil {
-			fmt.Printf("Something went wrong: %#v", err)
+			fmt.Printf("Something went wrong in WriteCRDDocs: %#v", err)
 		}
 	}
 

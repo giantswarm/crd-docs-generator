@@ -1,39 +1,46 @@
 ---
-title: {{ .title }} CRD Schema Reference
-linktitle: {{ .title }}
-technical_name: {{ .namePlural }}.{{ .group }}
+title: {{ .Title }} CRD Schema Reference
+linktitle: {{ .Title }}
+technical_name: {{ .NamePlural }}.{{ .Group }}
 description: >
   Custom Resource/Custom Resource Definition schema reference page
-  for the {{ .title }} resource ({{ .namePlural }}.{{ .group }}),
+  for the {{ .Title }} resource ({{ .NamePlural }}.{{ .Group }}),
   as part of the Giant Swarm Control Plane Kubernetes API documentation.
-date: {{ .date }}
-weight: {{ .weight }}
+date: {{ .Date }}
+weight: {{ .Weight }}
 ---
 
-# {{ .title }}
+# {{ .Title }}
 
-{{ with .description }}
+{{ with .Description }}
 <p class="crd-description">{{ . }}</p>
 {{ end -}}
 
 <dl class="crd-meta">
 <dt class="fullname">Full name:</dt>
-<dd class="fullname">{{ .namePlural }}.{{ .group }}</dd>
+<dd class="fullname">{{ .NamePlural }}.{{ .Group }}</dd>
 <dt class="groupname">Group:</dt>
-<dd class="groupname">{{ .group }}</dd>
-<dt class="version">Version:</dt>
-<dd class="version">{{ .version }}</dd>
+<dd class="groupname">{{ .Group }}</dd>
 <dt class="singularname">Singular name:</dt>
-<dd class="singularname">{{ .nameSingular }}</dd>
+<dd class="singularname">{{ .NameSingular }}</dd>
 <dt class="pluralname">Plural name:</dt>
-<dd class="pluralname">{{ .namePlural }}</dd>
+<dd class="pluralname">{{ .NamePlural }}</dd>
 <dt class="scope">Scope:</dt>
-<dd class="scope">{{ .scope }}</dd>
+<dd class="scope">{{ .Scope }}</dd>
+<dt class="versions">Versions:</dt>
+<dd class="versions">
+{{- range .Versions -}}
+<a class="version" href="#{{.}}" title="Show schema for version {{.}}">{{.}}</a>
+{{- end -}}
+</dd>
 </dl>
 
-## Schema
+{{ range $versionName, $versionSchema := .VersionSchemas }}
 
-{{ range .properties }}
+<div id="{{$versionName}}">
+<h2>Schema for version {{$versionName}}</h2>
+
+{{ range $versionSchema.Properties }}
 <div class="property depth-{{.Depth}}" id="{{.Path}}">
 <div class="property-header">
 <h3 class="property-path">{{.Path}}</h3>
@@ -55,6 +62,9 @@ weight: {{ .weight }}
 </div>
 {{ end }}
 
-## Example CR
+<h2 id="example-{{$versionName}}">Example CR</h2>
 
-TODO: Show example CR
+<p>TODO: Show example CR</p>
+
+</div>
+{{end}}
