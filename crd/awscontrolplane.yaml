@@ -20,10 +20,10 @@ spec:
       openAPIV3Schema:
         properties:
           spec:
+            type: object
             properties:
               instanceType:
                 type: string
-            type: object
   - name: v1alpha2
     served: true
     storage: true
@@ -31,13 +31,13 @@ spec:
       openAPIV3Schema:
         properties:
           spec:
+            type: object
             properties:
               availabilityZones:
+                type: array
                 items:
                   type: string
-                type: array
               instanceType:
                 type: string
-            type: object
   conversion:
     strategy: None
