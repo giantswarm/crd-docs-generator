@@ -5,9 +5,22 @@
 
 Generates schema reference documentation for Kubernetes Custom Resource Definitions (CRDs).
 
-This tool is built to generate our Control Plane Kubernetes API schema reference in https://docs.giantswarm.io/.
+This tool is built to generate our Control Plane Kubernetes API schema reference in https://docs.giantswarm.io/reference/.
 
 The generated output consists of Markdown files packed with HTML. By itself, this does not provide a fully readable and user-friendly set of documentation pages. Instead it relies on the HUGO website context, as the [giantswarm/docs](https://github.com/giantswarm/docs) repository, to provide an index page and useful styling.
+
+## Assumptions/Prerequisites
+
+This tool relies on:
+
+- CRDs being defined in the [giantswarm/apiextensions](https://github.com/giantswarm/apiextensions) repository
+- ... as one YAML file per CRD in the [apiextensions `docs/crd` folder](https://github.com/giantswarm/apiextensions/tree/master/docs/crd) folder.
+- CRDs providing an OpenAPIv3 validation schema
+  - either in the `.spec.validation` section of a CRD containg only one version
+  - or in the `.spec.versions[*].schema` position of a CRD containing multiple versions
+- OpenAPIv3 schemas containing `description` attributes for every property.
+- The topmost `description` value explaining the CRD itself. (For a CRD containing multiple versions, the first `description` found is used as such.)
+- CR examples to be found in the [apiextensions `docs/cr` folder](https://github.com/giantswarm/apiextensions/tree/master/docs/cr) as one example per YAML file.
 
 ## Usage
 

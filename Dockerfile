@@ -1,6 +1,6 @@
 FROM alpine:3.11
 
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates git
 
 ADD . /opt/crd-docs-generator
 

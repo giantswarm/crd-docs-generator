@@ -5,9 +5,12 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/giantswarm/crd-docs-generator/service/git"
 
 	"github.com/ghodss/yaml"
 	"github.com/giantswarm/microerror"
@@ -16,8 +19,8 @@ import (
 )
 
 const (
-	// Path for the CRD YAML files folder.
-	inputFolderPath = "./crd"
+	// Target path for our clone of the apiextensions repo.
+	repoFolder = "/tmp/gitclone"
 
 	// Path for Markdown output.
 	outputFolderPath = "./output"
@@ -28,45 +31,6 @@ const (
 	// Single CRD page template filename (without path)
 	outputTemplate = "crd.template"
 )
-
-var (
-	config = []ConfigCRDItem{
-		ConfigCRDItem{
-			FileNamePrefix: "app",
-		},
-		ConfigCRDItem{
-			FileNamePrefix: "appcatalog",
-		},
-		ConfigCRDItem{
-			FileNamePrefix: "awscluster",
-		},
-		ConfigCRDItem{
-			FileNamePrefix: "awscontrolplane",
-		},
-		ConfigCRDItem{
-			FileNamePrefix: "awsmachinedeployment",
-		},
-		ConfigCRDItem{
-			FileNamePrefix: "chart",
-		},
-		ConfigCRDItem{
-			FileNamePrefix: "g8scontrolplane",
-		},
-		ConfigCRDItem{
-			FileNamePrefix: "release",
-		},
-		ConfigCRDItem{
-			FileNamePrefix: "releasecycle",
-		},
-	}
-)
-
-// ConfigCRDItem configues one specific CRD to document.
-type ConfigCRDItem struct {
-	// First part of the CRD file name to read as input and
-	// the Markdown file to crete as output.
-	FileNamePrefix string
-}
 
 // SchemaProperty is a simplistic, flattened representation of a property
 // in a JSON Schema, without the recursion and containing only the elements
@@ -181,7 +145,7 @@ func toMarkdown(input string) template.HTML {
 }
 
 // WriteCRDDocs creates a CRD schema documetantation Markdown page.
-func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile string) error {
+func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFolder string) error {
 	templateCode, err := ioutil.ReadFile(templateFolderPath + "/" + outputTemplate)
 	if err != nil {
 		return microerror.Mask(err)
@@ -271,6 +235,9 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile
 		fmt.Printf("WARNING: %s.%s does not have an OpenAPIv3 validation schema. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
 	}
 
+	// Name output file after full CRD name.
+	outputFile := outputFolder + "/" + crd.Spec.Names.Plural + "." + crd.Spec.Group + ".md"
+
 	handler, err := os.Create(outputFile)
 	if err != nil {
 		return microerror.Mask(err)
@@ -289,20 +256,36 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFile
 }
 
 func main() {
-	for _, config := range config {
-		inputFile := inputFolderPath + "/" + config.FileNamePrefix + ".yaml"
+	crdFiles := []string{}
 
-		crd, err := ReadCRD(inputFile)
+	err := git.CloneRepositoryShallow("giantswarm", "apiextensions", repoFolder)
+	if err != nil {
+		fmt.Println("Error: Could not clone source repository.")
+		panic(err)
+	}
+
+	defer os.RemoveAll(repoFolder)
+
+	err = filepath.Walk(repoFolder+"/docs/crd", func(path string, info os.FileInfo, err error) error {
+		if strings.HasSuffix(path, ".yaml") {
+			fmt.Println(path)
+			crdFiles = append(crdFiles, path)
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, crdFile := range crdFiles {
+		crd, err := ReadCRD(crdFile)
 		if err != nil {
 			fmt.Printf("Something went wrong in ReadCRD: %#v", err)
 		}
 
-		outputFile := outputFolderPath + "/" + config.FileNamePrefix + ".md"
-
-		err = WriteCRDDocs(crd, outputFile)
+		err = WriteCRDDocs(crd, outputFolderPath)
 		if err != nil {
 			fmt.Printf("Something went wrong in WriteCRDDocs: %#v", err)
 		}
 	}
-
 }
