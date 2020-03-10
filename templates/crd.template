@@ -36,7 +36,7 @@ weight: {{ .Weight }}
 </dd>
 </dl>
 
-{{ with .VersionSchemas }}
+{{ if .VersionSchemas }}
 {{ range $versionName, $versionSchema := .VersionSchemas }}
 <div class="crd-schema-version" id="{{$versionName}}">
 <h2>Schema for version {{$versionName}}</h2>
@@ -75,7 +75,7 @@ weight: {{ .Weight }}
 
 {{ else }}
 <div class="crd-noversions">
-<p>We currently cannot show any schema information on this CRD. Sorry for the inconvenience!</p>
+<p>We currently cannot show any schema information on this <abbr title="custom resource definition">CRD</abbr>. Sorry for the inconvenience!</p>
 <p>Please refer to the <a href="https://pkg.go.dev/github.com/giantswarm/apiextensions/pkg/apis/">Godoc</a> or <a href="https://github.com/giantswarm/apiextensions/tree/master/pkg/apis">source</a> for details.</p>
 </div>
 {{ end }}
