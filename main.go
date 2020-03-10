@@ -55,6 +55,7 @@ type SchemaProperty struct {
 	Required bool
 }
 
+// OutputData is all the data we pass to the HTML template for the CRD detail page.
 type OutputData struct {
 	Date         string
 	Description  string
@@ -73,9 +74,11 @@ type OutputData struct {
 type OutputSchemaVersion struct {
 	Version    string
 	Properties []SchemaProperty
+	// YAML string showing an example CR.
+	ExampleCR string
 }
 
-// ReadCRD parses a CRD YAML file and creates markdown documentation.
+// ReadCRD reads a CRD YAML file and returns the Custom Resource Definition object it represents.
 func ReadCRD(inputFile string) (*apiextensionsv1beta1.CustomResourceDefinition, error) {
 	crd := &apiextensionsv1beta1.CustomResourceDefinition{}
 
@@ -239,6 +242,19 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 		fmt.Printf("WARNING: %s.%s does not have an OpenAPIv3 validation schema. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
 	}
 
+	// Try to read example CRs for all versions.
+	for _, version := range data.Versions {
+		crFileName := fmt.Sprintf("%s/%s_%s_%s.yaml", crFolder, crd.Spec.Group, version, crd.Spec.Names.Singular)
+		exampleCR, err := ioutil.ReadFile(crFileName)
+		if err != nil {
+			fmt.Printf("Error when reading example CR file %s: %s\n", crFileName, err)
+		} else {
+			outputSchema := data.VersionSchemas[version]
+			outputSchema.ExampleCR = string(exampleCR)
+			data.VersionSchemas[version] = outputSchema
+		}
+	}
+
 	// Name output file after full CRD name.
 	outputFile := outputFolder + "/" + crd.Spec.Names.Plural + "." + crd.Spec.Group + ".md"
 
@@ -284,12 +300,12 @@ func main() {
 	for _, crdFile := range crdFiles {
 		crd, err := ReadCRD(crdFile)
 		if err != nil {
-			fmt.Printf("Something went wrong in ReadCRD: %#v", err)
+			fmt.Printf("Something went wrong in ReadCRD: %#v\n", err)
 		}
 
 		err = WriteCRDDocs(crd, outputFolderPath)
 		if err != nil {
-			fmt.Printf("Something went wrong in WriteCRDDocs: %#v", err)
+			fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
 		}
 	}
 }

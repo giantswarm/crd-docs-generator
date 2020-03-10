@@ -62,9 +62,12 @@ weight: {{ .Weight }}
 </div>
 {{ end }}
 
-<h2 id="example-{{$versionName}}">Example CR</h2>
-
-<p>TODO: Show example CR</p>
+{{with .ExampleCR}}
+<h2 id="crd-example-{{$versionName}}">Example CR</h2>
+<pre class="crd-example-cr"><code class="language-yaml">
+{{ . -}}
+</code></pre>
+{{end}}
 
 </div>
 {{end}}
