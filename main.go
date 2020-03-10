@@ -22,6 +22,10 @@ const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
 
+	crdFolder = repoFolder + "/docs/crd"
+
+	crFolder = repoFolder + "/docs/cr"
+
 	// Path for Markdown output.
 	outputFolderPath = "./output"
 
@@ -266,7 +270,7 @@ func main() {
 
 	defer os.RemoveAll(repoFolder)
 
-	err = filepath.Walk(repoFolder+"/docs/crd", func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(crdFolder, func(path string, info os.FileInfo, err error) error {
 		if strings.HasSuffix(path, ".yaml") {
 			fmt.Println(path)
 			crdFiles = append(crdFiles, path)
