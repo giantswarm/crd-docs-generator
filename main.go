@@ -12,6 +12,7 @@ import (
 
 	"github.com/giantswarm/crd-docs-generator/service/git"
 
+	"github.com/Masterminds/sprig"
 	"github.com/ghodss/yaml"
 	"github.com/giantswarm/microerror"
 	blackfriday "gopkg.in/russross/blackfriday.v2"
@@ -156,12 +157,11 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 	}
 
 	// Add custom functions support for our template.
-	funcMap := template.FuncMap{
-		// Treat given test as Markdown and convert to HTML.
-		"markdown": toMarkdown,
-		// Join strings by separator
-		"join": strings.Join,
-	}
+	funcMap := sprig.FuncMap()
+	// Treat given test as Markdown and convert to HTML.
+	funcMap["markdown"] = toMarkdown
+	// Join strings by separator
+	funcMap["join"] = strings.Join
 
 	// Read our output template.
 	tpl := template.Must(template.New("schemapage").Funcs(funcMap).Parse(string(templateCode)))
