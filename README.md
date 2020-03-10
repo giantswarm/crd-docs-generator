@@ -36,9 +36,5 @@ The volume mapping defines where the generated output will land.
 
 ## TODO
 
-- Read CRD YAML directly from [apiextensions](https://github.com/giantswarm/apiextensions/tree/master/docs/crd), where available
-- Read example CR directly from [apiextensions](https://github.com/giantswarm/apiextensions/tree/master/docs/cr), where available
-- Have a main description for each CRD's purpose (to be fixed in apiextensions source)
-- Show CR example (per version)
 - Date in front matter should ideally reflect last modification, not docs generation
 - Parse template only once instead of for every CRD
