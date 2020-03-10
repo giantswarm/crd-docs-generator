@@ -1,33 +1,44 @@
-<!--
+[![CircleCI](https://circleci.com/gh/giantswarm/crd-docs-generator/tree/master.svg?style=shield&circle-token=c0f46d2b8c1482706d8d41b098d488efdf637a1f)](https://circleci.com/gh/giantswarm/crd-docs-generator/tree/master)
+[![Docker Repository on Quay](https://quay.io/repository/giantswarm/crd-docs-generator/status "Docker Repository on Quay")](https://quay.io/repository/giantswarm/crd-docs-generator)
 
-    TODO:
+# crd-docs-generator
 
-    - Add the project to the CircleCI:
-      https://circleci.com/setup-project/gh/giantswarm/REPOSITORY_NAME
+Generates schema reference documentation for Kubernetes Custom Resource Definitions (CRDs).
 
-    - Import RELEASE_TOKEN variable from template repository for the builds:
-      https://circleci.com/gh/giantswarm/REPOSITORY_NAME/edit#env-vars
+This tool is built to generate our Control Plane Kubernetes API schema reference in https://docs.giantswarm.io/reference/.
 
-    - Change the badge (with style=shield):
-      https://circleci.com/gh/giantswarm/REPOSITORY_NAME/edit#badges
-      If this is a private repository token with scope `status` will be needed.
+The generated output consists of Markdown files packed with HTML. By itself, this does not provide a fully readable and user-friendly set of documentation pages. Instead it relies on the HUGO website context, as the [giantswarm/docs](https://github.com/giantswarm/docs) repository, to provide an index page and useful styling.
 
-    - Run `devctl replace -i "REPOSITORY_NAME" "$(basename $(git rev-parse --show-toplevel))" *.md`
-      and commit your changes.
+## Assumptions/Prerequisites
 
-    - If the repository is public consider adding godoc badge. This should be
-      the first badge separated with a single space.
-      [![GoDoc](https://godoc.org/github.com/giantswarm/REPOSITORY_NAME?status.svg)](http://godoc.org/github.com/giantswarm/REPOSITORY_NAME)
+This tool relies on:
 
--->
-[![CircleCI](https://circleci.com/gh/giantswarm/template.svg?style=shield&circle-token=cbabd7d13186f190fca813db4f0c732b026f5f6c)](https://circleci.com/gh/giantswarm/template)
+- CRDs being defined in the [giantswarm/apiextensions](https://github.com/giantswarm/apiextensions) repository
+- ... as one YAML file per CRD in the [apiextensions `docs/crd` folder](https://github.com/giantswarm/apiextensions/tree/master/docs/crd) folder.
+- CRDs providing an OpenAPIv3 validation schema
+  - either in the `.spec.validation` section of a CRD containg only one version
+  - or in the `.spec.versions[*].schema` position of a CRD containing multiple versions
+- OpenAPIv3 schemas containing `description` attributes for every property.
+- The topmost `description` value explaining the CRD itself. (For a CRD containing multiple versions, the first `description` found is used as such.)
+- CR examples to be found in the [apiextensions `docs/cr` folder](https://github.com/giantswarm/apiextensions/tree/master/docs/cr) as one example per YAML file.
 
-# REPOSITORY_NAME
+## Usage
 
-This is a template repository containing some basic files every repository
-needs.
+The generator can be executed in Docker using a command like this:
 
-To use it just hit `Use this template` button or [this
-link][generate].
+```nohighlight
+docker run \
+    -v $PWD/path/to/output-folder:/opt/crd-docs-generator/output \
+    quay.io/giantswarm/crd-docs-generator
+```
 
-[generate]: https://github.com/giantswarm/template/generate
+The volume mapping defines where the generated output will land.
+
+## TODO
+
+- Read CRD YAML directly from [apiextensions](https://github.com/giantswarm/apiextensions/tree/master/docs/crd), where available
+- Read example CR directly from [apiextensions](https://github.com/giantswarm/apiextensions/tree/master/docs/cr), where available
+- Have a main description for each CRD's purpose (to be fixed in apiextensions source)
+- Show CR example (per version)
+- Date in front matter should ideally reflect last modification, not docs generation
+- Parse template only once instead of for every CRD
