@@ -209,8 +209,16 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 				Version:    crd.Spec.Version,
 				Properties: properties,
 			}
+		} else if len(crd.Spec.Versions) == 1 {
+			// There is a versions array with exactly one element, so we
+			// document that and only that.
+			data.Versions = []string{crd.Spec.Versions[0].Name}
+			data.VersionSchemas[crd.Spec.Versions[0].Name] = OutputSchemaVersion{
+				Version:    crd.Spec.Versions[0].Name,
+				Properties: properties,
+			}
 		} else {
-			fmt.Printf("WARNING: %s.%s does not have a .spec.version. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
+			fmt.Printf("WARNING: %s.%s does not have a .spec.version or .spec.versions has more than 1 element. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
 		}
 
 	} else if len(crd.Spec.Versions) > 0 {
