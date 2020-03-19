@@ -213,7 +213,7 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 			// There is a versions array with exactly one element, so we
 			// document that and only that.
 			data.Versions = []string{crd.Spec.Versions[0].Name}
-			data.VersionSchemas[crd.Spec.Version] = OutputSchemaVersion{
+			data.VersionSchemas[crd.Spec.Versions[0].Name] = OutputSchemaVersion{
 				Version:    crd.Spec.Versions[0].Name,
 				Properties: properties,
 			}
