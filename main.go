@@ -154,6 +154,7 @@ func toMarkdown(input string) template.HTML {
 
 // WriteCRDDocs creates a CRD schema documetantation Markdown page.
 func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFolder string) error {
+	fmt.Print("Writing CRD Docs for: " + crd.Spec.Names.Singular + " - ")
 	templateCode, err := ioutil.ReadFile(templateFolderPath + "/" + outputTemplate)
 	if err != nil {
 		return microerror.Mask(err)
@@ -280,6 +281,7 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 		fmt.Printf("%s: %s\n", outputFile, err)
 	}
 
+	fmt.Print("OK\n")
 	return nil
 }
 
