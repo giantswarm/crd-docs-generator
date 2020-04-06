@@ -154,7 +154,8 @@ func toMarkdown(input string) template.HTML {
 
 // WriteCRDDocs creates a CRD schema documetantation Markdown page.
 func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFolder string) error {
-	fmt.Print("Writing CRD Docs for: " + crd.Spec.Names.Singular + " - ")
+	fmt.Printf("Writing CRD Docs for: %s.%s - ", crd.Spec.Names.Plural, crd.Spec.Group)
+
 	templateCode, err := ioutil.ReadFile(templateFolderPath + "/" + outputTemplate)
 	if err != nil {
 		return microerror.Mask(err)
@@ -229,6 +230,12 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 				// Neither stored nore served means that this version
 				// can be skipped.
 				continue
+			}
+
+			// Guard against no Schema
+			if version.Schema == nil {
+				fmt.Printf("WARNING: %s.%s does not have a schema. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
+				return nil
 			}
 
 			// Get the first non-empty top level description and use it as the
