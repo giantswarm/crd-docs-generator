@@ -11,14 +11,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/cobra"
-
 	"github.com/Masterminds/sprig"
 	"github.com/ghodss/yaml"
-	"github.com/giantswarm/crd-docs-generator/service/git"
 	"github.com/giantswarm/microerror"
+	"github.com/spf13/cobra"
 	blackfriday "gopkg.in/russross/blackfriday.v2"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+
+	"github.com/giantswarm/crd-docs-generator/service/git"
 )
 
 // CRDDocsGenerator represents an instance of this command line tool, it carries
@@ -310,7 +310,7 @@ func main() {
 			},
 		}
 
-		c.PersistentFlags().StringVar(&crdDocsGenerator.apiExtensionsTag, "apiExtensionsTag", "master", "The tag to use from the apiextensions repo when building crd documentation.")
+		c.PersistentFlags().StringVar(&crdDocsGenerator.apiExtensionsTag, "apiextensions-commit-ref", "master", "The git commit reference (tag, branch, commit SHA) to use from the giantswarm/apiextensions repository")
 		crdDocsGenerator.rootCommand = c
 	}
 
