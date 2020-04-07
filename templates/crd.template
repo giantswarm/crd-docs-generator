@@ -41,8 +41,8 @@ layout: "crd"
 
 {{ if .VersionSchemas }}
 {{ range $versionName, $versionSchema := .VersionSchemas }}
-<div class="crd-schema-version" id="{{$versionName}}">
-<h2>Schema for version {{$versionName}}</h2>
+<div class="crd-schema-version">
+<h2 id="{{$versionName}}">Schema for version {{$versionName}}</h2>
 
 {{ range $versionSchema.Properties }}
 <div class="property depth-{{.Depth}}" id="{{.Path}}">
