@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -301,10 +302,11 @@ func main() {
 	var crdDocsGenerator CRDDocsGenerator
 	{
 		c := &cobra.Command{
-			Use:   "crd-docs-generator",
-			Short: "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
-			Run: func(cmd *cobra.Command, args []string) {
-				generateCrdDocs(crdDocsGenerator.apiExtensionsTag)
+			Use:          "crd-docs-generator",
+			Short:        "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
+			SilenceUsage: true,
+			RunE: func(cmd *cobra.Command, args []string) error {
+				return generateCrdDocs(crdDocsGenerator.apiExtensionsTag)
 			},
 		}
 
@@ -313,18 +315,17 @@ func main() {
 	}
 
 	if err = crdDocsGenerator.rootCommand.Execute(); err != nil {
-		fmt.Println(err)
+		printStackTrace(err)
 		os.Exit(1)
 	}
 }
 
-func generateCrdDocs(apiExtensionsTag string) {
+func generateCrdDocs(apiExtensionsTag string) error {
 	crdFiles := []string{}
 
 	err := git.CloneRepositoryShallow("giantswarm", "apiextensions", apiExtensionsTag, repoFolder)
 	if err != nil {
-		fmt.Println("Error: Could not clone source repository.")
-		panic(err)
+		return microerror.Mask(err)
 	}
 
 	defer os.RemoveAll(repoFolder)
@@ -337,7 +338,7 @@ func generateCrdDocs(apiExtensionsTag string) {
 		return nil
 	})
 	if err != nil {
-		panic(err)
+		return microerror.Mask(err)
 	}
 
 	for _, crdFile := range crdFiles {
@@ -350,5 +351,21 @@ func generateCrdDocs(apiExtensionsTag string) {
 		if err != nil {
 			fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
 		}
+	}
+
+	return nil
+}
+
+func printStackTrace(err error) {
+	fmt.Println("\n--- Stack Trace ---")
+	var stackedError microerror.JSONError
+	json.Unmarshal([]byte(microerror.JSON(err)), &stackedError)
+
+	for i, j := 0, len(stackedError.Stack)-1; i < j; i, j = i+1, j-1 {
+		stackedError.Stack[i], stackedError.Stack[j] = stackedError.Stack[j], stackedError.Stack[i]
+	}
+
+	for _, entry := range stackedError.Stack {
+		fmt.Printf("%s:%d\n", entry.File, entry.Line)
 	}
 }
