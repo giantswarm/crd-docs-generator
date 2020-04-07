@@ -232,12 +232,15 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 
 			// Get the first non-empty top level description and use it as the
 			// CRD description.
-			if data.Description == "" {
+			if data.Description == "" && version.Schema != nil {
 				data.Description = version.Schema.OpenAPIV3Schema.Description
 			}
 
 			var properties []SchemaProperty
-			properties = flattenProperties(version.Schema.OpenAPIV3Schema, properties, 0, "")
+
+			if version.Schema != nil && version.Schema.OpenAPIV3Schema != nil {
+				properties = flattenProperties(version.Schema.OpenAPIV3Schema, properties, 0, "")
+			}
 
 			data.VersionSchemas[version.Name] = OutputSchemaVersion{
 				Version:    version.Name,
@@ -296,7 +299,7 @@ func main() {
 
 	err = filepath.Walk(crdFolder, func(path string, info os.FileInfo, err error) error {
 		if strings.HasSuffix(path, ".yaml") {
-			fmt.Println(path)
+			fmt.Printf("Collecting file %s\n", path)
 			crdFiles = append(crdFiles, path)
 		}
 		return nil
@@ -306,10 +309,14 @@ func main() {
 	}
 
 	for _, crdFile := range crdFiles {
+		fmt.Printf("Reading file %s\n", crdFile)
+
 		crd, err := ReadCRD(crdFile)
 		if err != nil {
 			fmt.Printf("Something went wrong in ReadCRD: %#v\n", err)
 		}
+
+		fmt.Printf("Writing output for CRD %s\n", crd.Name)
 
 		err = WriteCRDDocs(crd, outputFolderPath)
 		if err != nil {
