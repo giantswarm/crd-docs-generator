@@ -9,6 +9,8 @@ description: {{ if .Description -}}
 {{ end }}
 date: {{ .Date }}
 weight: {{ .Weight }}
+source_repository: {{ .SourceRepository }}
+source_repository_ref: {{ .SourceRepositoryRef }}
 ---
 
 # {{ .Title }}
