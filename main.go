@@ -232,12 +232,6 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 				continue
 			}
 
-			// Guard against no Schema
-			if version.Schema == nil {
-				fmt.Printf("WARNING: %s.%s does not have a schema. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
-				return nil
-			}
-
 			// Get the first non-empty top level description and use it as the
 			// CRD description.
 			if data.Description == "" {
