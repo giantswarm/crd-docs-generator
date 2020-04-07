@@ -67,7 +67,7 @@ layout: "crd"
 {{ end }}
 
 {{with .ExampleCR}}
-<h2 id="crd-example-{{$versionName}}">Example CR</h2>
+<h3 id="crd-example-{{$versionName}}">Example CR</h2>
 <pre class="crd-example-cr"><code class="language-yaml">
 {{ . -}}
 </code></pre>
