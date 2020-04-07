@@ -10,14 +10,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/giantswarm/crd-docs-generator/service/git"
+	"github.com/spf13/cobra"
 
 	"github.com/Masterminds/sprig"
 	"github.com/ghodss/yaml"
+	"github.com/giantswarm/crd-docs-generator/service/git"
 	"github.com/giantswarm/microerror"
 	blackfriday "gopkg.in/russross/blackfriday.v2"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 )
+
+// CRDDocsGenerator represents an instance of this command line tool, it carries
+// the cobra command which runs the process along with configuration parameters
+// which come in as flags on the command line.
+type CRDDocsGenerator struct {
+	// Internals.
+	rootCommand *cobra.Command
+
+	// Settings/Preferences
+	apiExtensionsTag string // The tag to use from the apiextensions repo when building crd documentation.
+}
 
 const (
 	// Target path for our clone of the apiextensions repo.
@@ -284,9 +296,32 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 }
 
 func main() {
+	var err error
+
+	var crdDocsGenerator CRDDocsGenerator
+	{
+		c := &cobra.Command{
+			Use:   "crd-docs-generator",
+			Short: "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
+			Run: func(cmd *cobra.Command, args []string) {
+				generateCrdDocs(crdDocsGenerator.apiExtensionsTag)
+			},
+		}
+
+		c.PersistentFlags().StringVar(&crdDocsGenerator.apiExtensionsTag, "apiExtensionsTag", "master", "The tag to use from the apiextensions repo when building crd documentation.")
+		crdDocsGenerator.rootCommand = c
+	}
+
+	if err = crdDocsGenerator.rootCommand.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func generateCrdDocs(apiExtensionsTag string) {
 	crdFiles := []string{}
 
-	err := git.CloneRepositoryShallow("giantswarm", "apiextensions", repoFolder)
+	err := git.CloneRepositoryShallow("giantswarm", "apiextensions", apiExtensionsTag, repoFolder)
 	if err != nil {
 		fmt.Println("Error: Could not clone source repository.")
 		panic(err)

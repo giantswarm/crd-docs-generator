@@ -8,9 +8,9 @@ import (
 )
 
 // CloneRepositoryShallow will clone repository in a given directory.
-func CloneRepositoryShallow(user string, repo string, destDir string) error {
+func CloneRepositoryShallow(user string, repo string, tag string, destDir string) error {
 	{
-		cmd := exec.Command("git", "clone", "--depth", "1", fmt.Sprintf("https://github.com/%s/%s.git", user, repo), destDir)
+		cmd := exec.Command("git", "clone", "-b", tag, "--depth", "1", fmt.Sprintf("https://github.com/%s/%s.git", user, repo), destDir)
 		err := cmd.Run()
 		if err != nil {
 			return microerror.Mask(err)
