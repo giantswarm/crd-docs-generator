@@ -11,6 +11,7 @@ date: {{ .Date }}
 weight: {{ .Weight }}
 source_repository: {{ .SourceRepository }}
 source_repository_ref: {{ .SourceRepositoryRef }}
+layout: "crd"
 ---
 
 # {{ .Title }}
