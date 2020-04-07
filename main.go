@@ -21,6 +21,17 @@ import (
 	"github.com/giantswarm/crd-docs-generator/service/git"
 )
 
+const (
+	// SourceRepositoryURL is the URL to the repository defining our CRDs in Golang and YAML.
+	SourceRepositoryURL = "https://github.com/giantswarm/apiextensions"
+
+	// SourceRepositoryOrg is the Github organisation name form SourceRepositoryURL.
+	SourceRepositoryOrg = "giantswarm"
+
+	// SourceRepositoryName is the actual repo name from SourceRepositoryURL
+	SourceRepositoryName = "apiextensions"
+)
+
 // CRDDocsGenerator represents an instance of this command line tool, it carries
 // the cobra command which runs the process along with configuration parameters
 // which come in as flags on the command line.
@@ -70,20 +81,24 @@ type SchemaProperty struct {
 
 // OutputData is all the data we pass to the HTML template for the CRD detail page.
 type OutputData struct {
-	Date         string
-	Description  string
-	Group        string
-	NamePlural   string
-	NameSingular string
-	Scope        string
-	Title        string
-	Weight       int
+	Date                string
+	Description         string
+	Group               string
+	NamePlural          string
+	NameSingular        string
+	Scope               string
+	SourceRepository    string
+	SourceRepositoryRef string
+	Title               string
+	Weight              int
 	// Version names.
 	Versions []string
 	// Schema per version.
 	VersionSchemas map[string]OutputSchemaVersion
 }
 
+// OutputSchemaVersion is the schema information for a specific CRD version
+// we want to expose to our template.
 type OutputSchemaVersion struct {
 	Version    string
 	Properties []SchemaProperty
@@ -166,7 +181,7 @@ func toMarkdown(input string) template.HTML {
 }
 
 // WriteCRDDocs creates a CRD schema documetantation Markdown page.
-func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFolder string) error {
+func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFolder string, repoRef string) error {
 	templateCode, err := ioutil.ReadFile(templateFolderPath + "/" + outputTemplate)
 	if err != nil {
 		return microerror.Mask(err)
@@ -185,14 +200,16 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 	// Collect values to pass to our output template.
 	data := OutputData{
 		// Current date as page creation date for the front matter
-		Date:           time.Now().Format("2006-01-02"),
-		Group:          crd.Spec.Group,
-		NamePlural:     crd.Spec.Names.Plural,
-		NameSingular:   crd.Spec.Names.Singular,
-		Scope:          string(crd.Spec.Scope),
-		Title:          crd.Spec.Names.Kind,
-		Weight:         100,
-		VersionSchemas: make(map[string]OutputSchemaVersion),
+		Date:                time.Now().Format("2006-01-02"),
+		Group:               crd.Spec.Group,
+		NamePlural:          crd.Spec.Names.Plural,
+		NameSingular:        crd.Spec.Names.Singular,
+		Scope:               string(crd.Spec.Scope),
+		SourceRepository:    SourceRepositoryURL,
+		SourceRepositoryRef: repoRef,
+		Title:               crd.Spec.Names.Kind,
+		Weight:              100,
+		VersionSchemas:      make(map[string]OutputSchemaVersion),
 	}
 
 	// We handle two very different cases here and bring them to a unififed output structure.
@@ -326,7 +343,7 @@ func main() {
 func generateCrdDocs(apiExtensionsTag string) error {
 	crdFiles := []string{}
 
-	err := git.CloneRepositoryShallow("giantswarm", "apiextensions", apiExtensionsTag, repoFolder)
+	err := git.CloneRepositoryShallow(SourceRepositoryOrg, SourceRepositoryName, apiExtensionsTag, repoFolder)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -354,7 +371,7 @@ func generateCrdDocs(apiExtensionsTag string) error {
 
 		fmt.Printf("Writing output for CRD %s\n", crd.Name)
 
-		err = WriteCRDDocs(crd, outputFolderPath)
+		err = WriteCRDDocs(crd, outputFolderPath, apiExtensionsTag)
 		if err != nil {
 			fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
 		}

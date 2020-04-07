@@ -9,6 +9,9 @@ description: {{ if .Description -}}
 {{ end }}
 date: {{ .Date }}
 weight: {{ .Weight }}
+source_repository: {{ .SourceRepository }}
+source_repository_ref: {{ .SourceRepositoryRef }}
+layout: "crd"
 ---
 
 # {{ .Title }}
@@ -38,8 +41,8 @@ weight: {{ .Weight }}
 
 {{ if .VersionSchemas }}
 {{ range $versionName, $versionSchema := .VersionSchemas }}
-<div class="crd-schema-version" id="{{$versionName}}">
-<h2>Schema for version {{$versionName}}</h2>
+<div class="crd-schema-version">
+<h2 id="{{$versionName}}">Schema for version {{$versionName}}</h2>
 
 {{ range $versionSchema.Properties }}
 <div class="property depth-{{.Depth}}" id="{{.Path}}">
@@ -64,7 +67,7 @@ weight: {{ .Weight }}
 {{ end }}
 
 {{with .ExampleCR}}
-<h2 id="crd-example-{{$versionName}}">Example CR</h2>
+<h3 id="crd-example-{{$versionName}}">Example CR</h2>
 <pre class="crd-example-cr"><code class="language-yaml">
 {{ . -}}
 </code></pre>
