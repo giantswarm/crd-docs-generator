@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -10,14 +11,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/giantswarm/crd-docs-generator/service/git"
-
 	"github.com/Masterminds/sprig"
 	"github.com/ghodss/yaml"
 	"github.com/giantswarm/microerror"
+	"github.com/spf13/cobra"
 	blackfriday "gopkg.in/russross/blackfriday.v2"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+
+	"github.com/giantswarm/crd-docs-generator/service/git"
 )
+
+// CRDDocsGenerator represents an instance of this command line tool, it carries
+// the cobra command which runs the process along with configuration parameters
+// which come in as flags on the command line.
+type CRDDocsGenerator struct {
+	// Internals.
+	rootCommand *cobra.Command
+
+	// Settings/Preferences
+	apiExtensionsTag string // The tag to use from the apiextensions repo when building crd documentation.
+}
 
 const (
 	// Target path for our clone of the apiextensions repo.
@@ -287,12 +300,35 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 }
 
 func main() {
+	var err error
+
+	var crdDocsGenerator CRDDocsGenerator
+	{
+		c := &cobra.Command{
+			Use:          "crd-docs-generator",
+			Short:        "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
+			SilenceUsage: true,
+			RunE: func(cmd *cobra.Command, args []string) error {
+				return generateCrdDocs(crdDocsGenerator.apiExtensionsTag)
+			},
+		}
+
+		c.PersistentFlags().StringVar(&crdDocsGenerator.apiExtensionsTag, "apiextensions-commit-ref", "master", "The git commit reference (tag, branch, commit SHA) to use from the giantswarm/apiextensions repository")
+		crdDocsGenerator.rootCommand = c
+	}
+
+	if err = crdDocsGenerator.rootCommand.Execute(); err != nil {
+		printStackTrace(err)
+		os.Exit(1)
+	}
+}
+
+func generateCrdDocs(apiExtensionsTag string) error {
 	crdFiles := []string{}
 
-	err := git.CloneRepositoryShallow("giantswarm", "apiextensions", repoFolder)
+	err := git.CloneRepositoryShallow("giantswarm", "apiextensions", apiExtensionsTag, repoFolder)
 	if err != nil {
-		fmt.Println("Error: Could not clone source repository.")
-		panic(err)
+		return microerror.Mask(err)
 	}
 
 	defer os.RemoveAll(repoFolder)
@@ -305,7 +341,7 @@ func main() {
 		return nil
 	})
 	if err != nil {
-		panic(err)
+		return microerror.Mask(err)
 	}
 
 	for _, crdFile := range crdFiles {
@@ -322,5 +358,21 @@ func main() {
 		if err != nil {
 			fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
 		}
+	}
+
+	return nil
+}
+
+func printStackTrace(err error) {
+	fmt.Println("\n--- Stack Trace ---")
+	var stackedError microerror.JSONError
+	json.Unmarshal([]byte(microerror.JSON(err)), &stackedError)
+
+	for i, j := 0, len(stackedError.Stack)-1; i < j; i, j = i+1, j-1 {
+		stackedError.Stack[i], stackedError.Stack[j] = stackedError.Stack[j], stackedError.Stack[i]
+	}
+
+	for _, entry := range stackedError.Stack {
+		fmt.Printf("%s:%d\n", entry.File, entry.Line)
 	}
 }
