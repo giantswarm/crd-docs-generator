@@ -47,7 +47,7 @@ const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
 
-	crdFolder = repoFolder + "/docs/crd"
+	crdFolder = repoFolder + "/config/crd/bases"
 
 	crFolder = repoFolder + "/docs/cr"
 
