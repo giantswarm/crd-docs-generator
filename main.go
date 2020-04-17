@@ -47,7 +47,7 @@ const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
 
-	crdFolder = repoFolder + "/docs/crd"
+	crdFolder = repoFolder + "/config/crd/bases"
 
 	crFolder = repoFolder + "/docs/cr"
 
@@ -172,6 +172,11 @@ func flattenProperties(schema *apiextensionsv1beta1.JSONSchemaProps, properties 
 		}
 	}
 
+	// Sort properties by path.
+	sort.Slice(properties, func(i, j int) bool {
+		return properties[i].Path < properties[j].Path
+	})
+
 	return properties
 }
 
@@ -228,11 +233,6 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 		var properties []SchemaProperty
 		properties = flattenProperties(crd.Spec.Validation.OpenAPIV3Schema, properties, 0, "")
 
-		// Sort properties by path.
-		sort.Slice(properties, func(i, j int) bool {
-			return properties[i].Path < properties[j].Path
-		})
-
 		if crd.Spec.Version != "" {
 			data.Versions = []string{crd.Spec.Version}
 			data.VersionSchemas[crd.Spec.Version] = OutputSchemaVersion{
@@ -288,7 +288,7 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 		crFileName := fmt.Sprintf("%s/%s_%s_%s.yaml", crFolder, crd.Spec.Group, version, crd.Spec.Names.Singular)
 		exampleCR, err := ioutil.ReadFile(crFileName)
 		if err != nil {
-			fmt.Printf("Error when reading example CR file %s: %s\n", crFileName, err)
+			fmt.Printf("Error when reading example CR file: %s\n", err)
 		} else {
 			outputSchema := data.VersionSchemas[version]
 			outputSchema.ExampleCR = string(exampleCR)

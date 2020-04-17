@@ -8,3 +8,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 [Unreleased]: https://github.com/giantswarm/REPOSITORY_NAME/tree/master
+
+- Adapt CRD input path to match latest changes in the apiextensions repo
