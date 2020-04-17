@@ -172,6 +172,11 @@ func flattenProperties(schema *apiextensionsv1beta1.JSONSchemaProps, properties 
 		}
 	}
 
+	// Sort properties by path.
+	sort.Slice(properties, func(i, j int) bool {
+		return properties[i].Path < properties[j].Path
+	})
+
 	return properties
 }
 
@@ -227,11 +232,6 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 		// Create flat attribute list from hierarchy.
 		var properties []SchemaProperty
 		properties = flattenProperties(crd.Spec.Validation.OpenAPIV3Schema, properties, 0, "")
-
-		// Sort properties by path.
-		sort.Slice(properties, func(i, j int) bool {
-			return properties[i].Path < properties[j].Path
-		})
 
 		if crd.Spec.Version != "" {
 			data.Versions = []string{crd.Spec.Version}
