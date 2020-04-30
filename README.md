@@ -29,7 +29,10 @@ The generator can be executed in Docker using a command like this:
 ```nohighlight
 docker run \
     -v $PWD/path/to/output-folder:/opt/crd-docs-generator/output \
-    quay.io/giantswarm/crd-docs-generator
+    quay.io/giantswarm/crd-docs-generator \
+      --apiextensions-commit-ref v0.3.3 \
+      --skip-crd memcachedconfigs.example.giantswarm.io \
+      --skip-crd releasecycles.release.giantswarm.io
 ```
 
 The volume mapping defines where the generated output will land.
