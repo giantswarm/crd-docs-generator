@@ -40,7 +40,11 @@ type CRDDocsGenerator struct {
 	rootCommand *cobra.Command
 
 	// Settings/Preferences
-	apiExtensionsTag string // The tag to use from the apiextensions repo when building crd documentation.
+
+	// The tag to use from the apiextensions repo when building crd documentation.
+	apiExtensionsTag string
+	// Which CRDs to skip. Expects whole names in the form `"thiskinds.thisgroup.io"`.
+	skipCRDs []string
 }
 
 const (
@@ -326,11 +330,12 @@ func main() {
 			Short:        "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
 			SilenceUsage: true,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return generateCrdDocs(crdDocsGenerator.apiExtensionsTag)
+				return generateCrdDocs(crdDocsGenerator.apiExtensionsTag, crdDocsGenerator.skipCRDs)
 			},
 		}
 
 		c.PersistentFlags().StringVar(&crdDocsGenerator.apiExtensionsTag, "apiextensions-commit-ref", "master", "The git commit reference (tag, branch, commit SHA) to use from the giantswarm/apiextensions repository")
+		c.PersistentFlags().StringSliceVar(&crdDocsGenerator.skipCRDs, "skip-crd", []string{}, "Name of a CRD to skip. Must use full names with plural and group in lower case. Can be used multiple times.")
 		crdDocsGenerator.rootCommand = c
 	}
 
@@ -340,7 +345,7 @@ func main() {
 	}
 }
 
-func generateCrdDocs(apiExtensionsTag string) error {
+func generateCrdDocs(apiExtensionsTag string, crdsToSkip []string) error {
 	crdFiles := []string{}
 
 	err := git.CloneRepositoryShallow(SourceRepositoryOrg, SourceRepositoryName, apiExtensionsTag, repoFolder)
@@ -369,15 +374,30 @@ func generateCrdDocs(apiExtensionsTag string) error {
 			fmt.Printf("Something went wrong in ReadCRD: %#v\n", err)
 		}
 
-		fmt.Printf("Writing output for CRD %s\n", crd.Name)
+		if contains(crdsToSkip, crd.Name) {
+			fmt.Printf("Skipping CRD %s\n", crd.Name)
+		} else {
+			fmt.Printf("Writing output for CRD %s\n", crd.Name)
 
-		err = WriteCRDDocs(crd, outputFolderPath, apiExtensionsTag)
-		if err != nil {
-			fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
+			err = WriteCRDDocs(crd, outputFolderPath, apiExtensionsTag)
+			if err != nil {
+				fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
+			}
 		}
 	}
 
 	return nil
+}
+
+// contains checks whether slice contains the given item.
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+
+	return false
 }
 
 func printStackTrace(err error) {
