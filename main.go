@@ -16,7 +16,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/cobra"
 	blackfriday "gopkg.in/russross/blackfriday.v2"
-	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 
 	"github.com/giantswarm/crd-docs-generator/service/git"
 )
@@ -51,7 +51,7 @@ const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
 
-	crdFolder = repoFolder + "/config/crd/bases"
+	crdFolder = repoFolder + "/config/crd/v1"
 
 	crFolder = repoFolder + "/docs/cr"
 
@@ -111,8 +111,8 @@ type OutputSchemaVersion struct {
 }
 
 // ReadCRD reads a CRD YAML file and returns the Custom Resource Definition object it represents.
-func ReadCRD(inputFile string) (*apiextensionsv1beta1.CustomResourceDefinition, error) {
-	crd := &apiextensionsv1beta1.CustomResourceDefinition{}
+func ReadCRD(inputFile string) (*apiextensionsv1.CustomResourceDefinition, error) {
+	crd := &apiextensionsv1.CustomResourceDefinition{}
 
 	yamlBytes, err := ioutil.ReadFile(inputFile)
 	if err != nil {
@@ -129,7 +129,7 @@ func ReadCRD(inputFile string) (*apiextensionsv1beta1.CustomResourceDefinition, 
 
 // flattenProperties recurses over all properties of a JSON Schema
 // and returns a flat slice of the elements we need for our output.
-func flattenProperties(schema *apiextensionsv1beta1.JSONSchemaProps, properties []SchemaProperty, depth int8, pathPrefix string) []SchemaProperty {
+func flattenProperties(schema *apiextensionsv1.JSONSchemaProps, properties []SchemaProperty, depth int8, pathPrefix string) []SchemaProperty {
 	// Capture names of required properties.
 	requiredProps := make(map[string]bool)
 	for _, p := range schema.Required {
@@ -190,7 +190,7 @@ func toMarkdown(input string) template.HTML {
 }
 
 // WriteCRDDocs creates a CRD schema documetantation Markdown page.
-func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFolder string, repoRef string) error {
+func WriteCRDDocs(crd *apiextensionsv1.CustomResourceDefinition, outputFolder string, repoRef string) error {
 	templateCode, err := ioutil.ReadFile(templateFolderPath + "/" + outputTemplate)
 	if err != nil {
 		return microerror.Mask(err)
@@ -221,70 +221,32 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 		VersionSchemas:      make(map[string]OutputSchemaVersion),
 	}
 
-	// We handle two very different cases here and bring them to a unififed output structure.
-	//
-	// A: CRD contains only one version defined as .spec.version and .spec.validation contains
-	// the schema.
-	//
-	// B: CRD contains multiple schemas under .spec.versions[*] and schema under
-	// .spec.versions[*].schema
-	//
-	if crd.Spec.Validation != nil {
-		// Case A: CRD contains only one version defined as .spec.version.
-		data.Description = crd.Spec.Validation.OpenAPIV3Schema.Description
+	// Case B: CRD contains multiple versions and schemas.
+	for _, version := range crd.Spec.Versions {
+		if !version.Served && !version.Storage {
+			// Neither stored nore served means that this version
+			// can be skipped.
+			continue
+		}
 
-		// Create flat attribute list from hierarchy.
+		// Get the first non-empty top level description and use it as the
+		// CRD description.
+		if data.Description == "" && version.Schema != nil {
+			data.Description = version.Schema.OpenAPIV3Schema.Description
+		}
+
 		var properties []SchemaProperty
-		properties = flattenProperties(crd.Spec.Validation.OpenAPIV3Schema, properties, 0, "")
 
-		if crd.Spec.Version != "" {
-			data.Versions = []string{crd.Spec.Version}
-			data.VersionSchemas[crd.Spec.Version] = OutputSchemaVersion{
-				Version:    crd.Spec.Version,
-				Properties: properties,
-			}
-		} else if len(crd.Spec.Versions) == 1 {
-			// There is a versions array with exactly one element, so we
-			// document that and only that.
-			data.Versions = []string{crd.Spec.Versions[0].Name}
-			data.VersionSchemas[crd.Spec.Versions[0].Name] = OutputSchemaVersion{
-				Version:    crd.Spec.Versions[0].Name,
-				Properties: properties,
-			}
-		} else {
-			fmt.Printf("WARNING: %s.%s does not have a .spec.version or .spec.versions has more than 1 element. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
+		if version.Schema != nil && version.Schema.OpenAPIV3Schema != nil {
+			properties = flattenProperties(version.Schema.OpenAPIV3Schema, properties, 0, "")
 		}
 
-	} else if len(crd.Spec.Versions) > 0 {
-		// Case B: CRD contains multiple versions and schemas.
-		for _, version := range crd.Spec.Versions {
-			if !version.Served && !version.Storage {
-				// Neither stored nore served means that this version
-				// can be skipped.
-				continue
-			}
-
-			// Get the first non-empty top level description and use it as the
-			// CRD description.
-			if data.Description == "" && version.Schema != nil {
-				data.Description = version.Schema.OpenAPIV3Schema.Description
-			}
-
-			var properties []SchemaProperty
-
-			if version.Schema != nil && version.Schema.OpenAPIV3Schema != nil {
-				properties = flattenProperties(version.Schema.OpenAPIV3Schema, properties, 0, "")
-			}
-
-			data.VersionSchemas[version.Name] = OutputSchemaVersion{
-				Version:    version.Name,
-				Properties: properties,
-			}
-
-			data.Versions = append(data.Versions, version.Name)
+		data.VersionSchemas[version.Name] = OutputSchemaVersion{
+			Version:    version.Name,
+			Properties: properties,
 		}
-	} else {
-		fmt.Printf("WARNING: %s.%s does not have an OpenAPIv3 validation schema. Can't produce the expected output.\n", crd.Spec.Names.Plural, crd.Spec.Group)
+
+		data.Versions = append(data.Versions, version.Name)
 	}
 
 	// Try to read example CRs for all versions.
@@ -312,7 +274,7 @@ func WriteCRDDocs(crd *apiextensionsv1beta1.CustomResourceDefinition, outputFold
 	if err != nil {
 
 		// TODO: return error
-		//return microerror.Mask(err)
+		// return microerror.Mask(err)
 
 		fmt.Printf("%s: %s\n", outputFile, err)
 	}
