@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/giantswarm/REPOSITORY_NAME/tree/master
+[Unreleased]: https://github.com/giantswarm/crd-docs-generator/tree/master
 
+- Move example CR above property details
+- Fix a headline tag
 - Adapt CRD input path to match latest changes in the apiextensions repo

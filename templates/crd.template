@@ -42,7 +42,16 @@ layout: "crd"
 {{ if .VersionSchemas }}
 {{ range $versionName, $versionSchema := .VersionSchemas }}
 <div class="crd-schema-version">
-<h2 id="{{$versionName}}">Schema for version {{$versionName}}</h2>
+<h2 id="{{$versionName}}">Version {{$versionName}}</h2>
+
+{{with .ExampleCR}}
+<h3 id="crd-example-{{$versionName}}">Example CR</h3>
+<pre class="crd-example-cr"><code class="language-yaml">
+{{ . -}}
+</code></pre>
+{{end}}
+
+<h3 id="property-details-{{$versionName}}">Properties</h3>
 
 {{ range $versionSchema.Properties }}
 <div class="property depth-{{.Depth}}" id="{{.Path}}">
@@ -65,13 +74,6 @@ layout: "crd"
 </div>
 </div>
 {{ end }}
-
-{{with .ExampleCR}}
-<h3 id="crd-example-{{$versionName}}">Example CR</h2>
-<pre class="crd-example-cr"><code class="language-yaml">
-{{ . -}}
-</code></pre>
-{{end}}
 
 </div>
 {{end}}
