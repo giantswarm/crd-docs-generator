@@ -9,4 +9,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/giantswarm/REPOSITORY_NAME/tree/master
 
+- Add blacklisting feature to skip certain CRDs that should not get documented
 - Adapt CRD input path to match latest changes in the apiextensions repo
