@@ -8,9 +8,10 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/ghodss/yaml v1.0.0
 	github.com/giantswarm/microerror v0.2.0
-	github.com/huandu/xstrings v1.3.0 // indirect
+	github.com/huandu/xstrings v1.3.1 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
-	github.com/spf13/cobra v0.0.7
+	github.com/spf13/cobra v1.0.0
 	gopkg.in/russross/blackfriday.v2 v2.0.0
+	gopkg.in/yaml.v2 v2.2.8
 	k8s.io/apiextensions-apiserver v0.17.3
 )

@@ -29,10 +29,15 @@ The generator can be executed in Docker using a command like this:
 ```nohighlight
 docker run \
     -v $PWD/path/to/output-folder:/opt/crd-docs-generator/output \
+    -v $PWD:/opt/crd-docs-generator/config \
     quay.io/giantswarm/crd-docs-generator \
-      --apiextensions-commit-ref v0.3.3 \
-      --skip-crd memcachedconfigs.example.giantswarm.io \
-      --skip-crd releasecycles.release.giantswarm.io
+      --config /opt/crd-docs-generator/config/config.yaml
+```
+
+or in Go like this:
+
+```nohighlight
+go run main.go --config service/config/testdata/config1.yaml
 ```
 
 The volume mapping defines where the generated output will land.
