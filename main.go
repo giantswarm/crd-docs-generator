@@ -79,9 +79,6 @@ func generateCrdDocs(configFilePath string) error {
 		return microerror.Mask(err)
 	}
 
-	fmt.Printf("Config: %#v\n", configuration)
-	fmt.Printf("Config.SourceRepository:: %#v\n", configuration.SourceRepository)
-
 	crdFiles := []string{}
 
 	err = git.CloneRepositoryShallow(
