@@ -151,7 +151,13 @@ func contains(slice []string, item string) bool {
 func printStackTrace(err error) {
 	fmt.Println("\n--- Stack Trace ---")
 	var stackedError microerror.JSONError
-	json.Unmarshal([]byte(microerror.JSON(err)), &stackedError)
+	jsonErr := json.Unmarshal([]byte(microerror.JSON(err)), &stackedError)
+	if jsonErr != nil {
+		fmt.Println("Error when trying to Unmarshal JSON error:")
+		fmt.Printf("%#v\n", jsonErr)
+		fmt.Println("\nOriginal error:")
+		fmt.Printf("%#v\n", err)
+	}
 
 	for i, j := 0, len(stackedError.Stack)-1; i < j; i, j = i+1, j-1 {
 		stackedError.Stack[i], stackedError.Stack[j] = stackedError.Stack[j], stackedError.Stack[i]
