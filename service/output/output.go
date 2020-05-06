@@ -154,7 +154,7 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition, crFolder, outputFo
 }
 
 func toMarkdown(input string) template.HTML {
-	inputBytes := []byte(fmt.Sprintf("%s", input))
+	inputBytes := []byte(input)
 	return template.HTML(blackfriday.Run(inputBytes))
 }
 
