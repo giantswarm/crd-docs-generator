@@ -17,7 +17,7 @@ workflows:
           name: go-build-crd-docs-generator
           binary: crd-docs-generator
           requires:
-            - go-test-crd-docs-generato
+            - go-test-crd-docs-generator
           # filters is needed to trigger job also on git tag.
           filters:
             tags:
