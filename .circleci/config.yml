@@ -1,26 +1,36 @@
-version: 2
-jobs:
-  build:
-    machine:
-      image: "ubuntu-1604:201903-01"
+version: 2.1
+orbs:
+  architect: giantswarm/architect@0.8.13
 
-    steps:
-    - checkout
+workflows:
+  build-workflow:
+    jobs:
 
-    - run:
-        name: Install architect
-        command: |
-          wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/tags/v1.0.0 | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
-          chmod +x ./architect
-          ./architect version
+      - architect/go-test:
+          name: go-test-crd-docs-generator
+          # filters is needed to trigger job also on git tag.
+          filters:
+            tags:
+              only: /^v.*/
 
-    - run:
-        name: Build using architect
-        command: ./architect build
-
-    - deploy:
-        name: architect deploy when branch is master
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "master" ]; then
-            ./architect deploy
-          fi
+      - architect/go-build:
+          name: go-build-crd-docs-generator
+          binary: crd-docs-generator
+          requires:
+            - go-test-crd-docs-generator
+          # filters is needed to trigger job also on git tag.
+          filters:
+            tags:
+              only: /^v.*/
+      
+      - architect/push-to-docker:
+          name: push-crd-docs-generator-to-quay
+          image: quay.io/giantswarm/crd-docs-generator
+          username_envar: QUAY_USERNAME
+          password_envar: QUAY_PASSWORD
+          requires:
+            - go-build-crd-docs-generator
+          # filters is needed to trigger job also on git tag.
+          filters:
+            tags:
+              only: /^v.*/

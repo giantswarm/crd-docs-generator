@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os/exec"
 
-	errorpkg "github.com/giantswarm/crd-docs-generator/error"
 	"github.com/giantswarm/microerror"
+
+	errorpkg "github.com/giantswarm/crd-docs-generator/error"
 )
 
 // CloneRepositoryShallow will clone repository in a given directory.

@@ -1,0 +1,8 @@
+source_repository:
+  url: https://github.com/giantswarm/apiextensions
+  organization: giantswarm
+  short_name: apiextensions
+  commit_reference: v0.3.4
+skip_crds:
+  - memcachedconfigs.example.giantswarm.io
+  - releasecycles.release.giantswarm.io

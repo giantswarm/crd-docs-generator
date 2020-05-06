@@ -13,3 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move example CR above property details
 - Fix a headline tag
 - Adapt CRD input path to match latest changes in the apiextensions repo
+- Refactor: move functions into services
+- Use config file for settings instead of flags
+- Switch CI from architect to architect-orb
