@@ -62,9 +62,9 @@ layout: "crd"
 <div class="property-meta">
 {{with .Type}}<span class="property-type">{{.}}</span>{{end}}
 {{ if not .Required }}
-{{ else }}
+{{ else -}}
 <span class="property-required">Required</span>
-{{ end }}
+{{ end -}}
 </div>
 {{with .Description}}
 <div class="property-description">
