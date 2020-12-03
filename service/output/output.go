@@ -7,7 +7,6 @@ import (
 	"os"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/Masterminds/sprig"
 	"github.com/giantswarm/microerror"
@@ -35,7 +34,6 @@ type SchemaProperty struct {
 
 // PageData is all the data we pass to the HTML template for the CRD detail page.
 type PageData struct {
-	Date                string
 	Description         string
 	Group               string
 	NamePlural          string
@@ -79,8 +77,6 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition, crFolder, outputFo
 
 	// Collect values to pass to our output template.
 	data := PageData{
-		// Current date as page creation date for the front matter
-		Date:                time.Now().Format("2006-01-02"),
 		Group:               crd.Spec.Group,
 		NamePlural:          crd.Spec.Names.Plural,
 		NameSingular:        crd.Spec.Names.Singular,
