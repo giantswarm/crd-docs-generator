@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add more terminology changes and add aliases for redirects after URL changes.
+
+## v0.2.1
+
 - Change name "Control Plane Kubernetes API" to "Management Cluster API".
 
 ## v0.2.0
