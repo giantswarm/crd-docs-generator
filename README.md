@@ -5,7 +5,7 @@
 
 Generates schema reference documentation for Kubernetes Custom Resource Definitions (CRDs).
 
-This tool is built to generate our Control Plane Kubernetes API schema reference in https://docs.giantswarm.io/reference/cp-k8s-api/.
+This tool is built to generate our Management Cluster API schema reference in https://docs.giantswarm.io/reference/cp-k8s-api/.
 
 The generated output consists of Markdown files packed with HTML. By itself, this does not provide a fully readable and user-friendly set of documentation pages. Instead it relies on the HUGO website context, as the [giantswarm/docs](https://github.com/giantswarm/docs) repository, to provide an index page and useful styling.
 
@@ -44,5 +44,4 @@ The volume mapping defines where the generated output will land.
 
 ## TODO
 
-- Date in front matter should ideally reflect last modification, not docs generation
 - Parse template only once instead of for every CRD

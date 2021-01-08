@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Change name "Control Plane Kubernetes API" to "Management Cluster API".
+
+## v0.2.0
+
 - Remove date field from front matter of generated pages, as it's no longer needed.
 
 ## v0.1.1
