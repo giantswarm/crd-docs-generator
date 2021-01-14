@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Change name "Management Cluster API" to "Management API".
+
+## v0.2.2
+
 - Add more terminology changes and add aliases for redirects after URL changes.
 
 ## v0.2.1
