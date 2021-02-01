@@ -15,3 +15,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apiextensions-apiserver v0.20.2
 )
+
+replace github.com/coreos/etcd => github.com/coreos/etcd v3.3.25+incompatible
