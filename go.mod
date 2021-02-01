@@ -12,6 +12,6 @@ require (
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/spf13/cobra v1.0.0
 	gopkg.in/russross/blackfriday.v2 v2.0.0
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apiextensions-apiserver v0.17.3
 )
