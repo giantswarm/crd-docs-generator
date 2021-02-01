@@ -10,7 +10,7 @@ import (
 
 	"github.com/Masterminds/sprig"
 	"github.com/giantswarm/microerror"
-	blackfriday "gopkg.in/russross/blackfriday.v2"
+	blackfriday "github.com/russross/blackfriday/v2"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 
