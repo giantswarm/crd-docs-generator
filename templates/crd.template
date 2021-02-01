@@ -47,9 +47,10 @@ aliases:
 
 {{with .ExampleCR}}
 <h3 id="crd-example-{{$versionName}}">Example CR</h3>
-<pre class="crd-example-cr"><code class="language-yaml">
-{{ . -}}
-</code></pre>
+
+```yaml
+{{ .|raw -}}
+```
 {{end}}
 
 <h3 id="property-details-{{$versionName}}">Properties</h3>
