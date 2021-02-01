@@ -159,6 +159,8 @@ func toMarkdown(input string) template.HTML {
 }
 
 func rawString(input string) template.HTML {
+	// To mitigate gosec "this method will not auto-escape HTML. Verify data is well formed"
+	// #nosec G203
 	return template.HTML(input)
 }
 
