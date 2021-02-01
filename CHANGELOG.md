@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2021-02-01
+
 - Change name "Management Cluster API" to "Management API".
 
 ## v0.2.2
@@ -35,4 +37,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use config file for settings instead of flags
 - Switch CI from architect to architect-orb
 
-[Unreleased]: https://github.com/giantswarm/crd-docs-generator/tree/master
+[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/giantswarm/crd-docs-generator/releases/tag/v0.3.0
