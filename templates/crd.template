@@ -76,20 +76,28 @@ aliases:
 </div>
 {{ end }}
 
-{{ range $versionSchema.Annotations }}
+<h3 id="annotation-details-{{$versionName}}">Annotations</h3>
+
 <table style="width:100%">
   <tr>
     <th>Annotation</th>
     <th>Minimum Release</th>
     <th>Documentation</th>
   </tr>
-  <tr>
-    <td>{{.Annotation}}</td>
-    <td>{{.Release}}</td>
-    <td>{{.Documentation}}</td>
-  </tr>
+  {{ range $versionSchema.Annotations }}
+    <tr>
+      <td>{{.Annotation}}</td>
+      <td>{{.Release}}</td>
+      <td>
+        {{with .Documentation}}
+        <div class="annotation-documentation">
+          {{.|markdown}}
+        </div>
+        {{end}}
+      </td>
+    </tr>
+  {{ end }}
 </table>
-{{ end }}
 
 </div>
 {{end}}
