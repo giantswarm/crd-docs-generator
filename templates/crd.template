@@ -76,6 +76,21 @@ aliases:
 </div>
 {{ end }}
 
+{{ range $versionSchema.Annotations }}
+<table style="width:100%">
+  <tr>
+    <th>Annotation</th>
+    <th>Minimum Release</th>
+    <th>Documentation</th>
+  </tr>
+  <tr>
+    <td>{{.Annotation}}</td>
+    <td>{{.Release}}</td>
+    <td>{{.Documentation}}</td>
+  </tr>
+</table>
+{{ end }}
+
 </div>
 {{end}}
 
