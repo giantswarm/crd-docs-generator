@@ -90,13 +90,7 @@ aliases:
       <tr>
         <td>{{.Annotation}}</td>
         <td>{{.Release}}</td>
-        <td>
-          {{with .Documentation}}
-          <div class="annotation-documentation">
-            {{.|markdown}}
-          </div>
-          {{end}}
-        </td>
+        <td>{{.Documentation}}</td>
       </tr>
     {{ end }}
   </table>
