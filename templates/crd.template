@@ -81,7 +81,7 @@ aliases:
   {{ range $versionSchema.Annotations }}
     <div class="annotation">
       <div class="annotation-header">
-        <h3 class="annotation-path" id="{{$.APIVersion}}-{{.Annotation}}">{{.Annotation}}</h3>
+        <h3 class="annotation-path" id="{{.APIVersion}}-{{.Annotation}}">{{.Annotation}}</h3>
       </div>
       <div class="annotation-body">
         <div class="annotation-meta">
