@@ -78,6 +78,8 @@ aliases:
 
 
 {{ if .Annotations }}
+<h3 id="annotation-details-{{$versionName}}">Annotations</h3>
+
 {{ range $versionSchema.Annotations }}
 <div class="annotation">
 <div class="annotation-header">
