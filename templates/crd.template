@@ -85,7 +85,7 @@ aliases:
       </div>
       <div class="annotation-body">
         <div class="annotation-meta">
-          {{with .Release}}<span class="annotation-type">{{.}}</span>{{end}}
+          {{with .Release}}<span class="annotation-release">{{.}}</span>{{end}}
         </div>
           {{with .Documentation}}
           <div class="annotation-description">
