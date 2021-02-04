@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add flag `--template` to specify the template path
+
 ## [0.3.0] - 2021-02-02
 
 - Don't try to add syntax highlighting. Use tripple backtick instead.
