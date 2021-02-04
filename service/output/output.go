@@ -59,8 +59,8 @@ type SchemaVersion struct {
 }
 
 // WritePage creates a CRD schema documentation Markdown page.
-func WritePage(crd *apiextensionsv1.CustomResourceDefinition, crFolder, outputFolder, repoURL, repoRef, templateFolderPath, outputTemplate string) error {
-	templateCode, err := ioutil.ReadFile(templateFolderPath + "/" + outputTemplate)
+func WritePage(crd *apiextensionsv1.CustomResourceDefinition, crFolder, outputFolder, repoURL, repoRef, templatePath string) error {
+	templateCode, err := ioutil.ReadFile(templatePath)
 	if err != nil {
 		return microerror.Mask(err)
 	}
