@@ -43,12 +43,6 @@ const (
 
 	// Path for Markdown output.
 	outputFolderPath = "./output"
-
-	// Path for templates
-	templateFolderPath = "./templates"
-
-	// Single CRD page template filename (without path)
-	outputTemplate = "crd.template"
 )
 
 func main() {
