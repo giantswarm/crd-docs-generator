@@ -121,7 +121,7 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition, annotations []CRDA
 		data.VersionSchemas[version.Name] = SchemaVersion{
 			Version:     version.Name,
 			Properties:  properties,
-			Annotations: filterAnnotations(annotations, crd.GetObjectMeta().GetName(), version.Name),
+			Annotations: sortAnnotations(filterAnnotations(annotations, crd.GetObjectMeta().GetName(), version.Name)),
 		}
 
 		data.Versions = append(data.Versions, version.Name)
@@ -170,6 +170,14 @@ func filterAnnotations(annotations []CRDAnnotationSupport, CRDName string, APIVe
 	}
 
 	return result
+}
+
+func sortAnnotations(annotations []CRDAnnotationSupport) []CRDAnnotationSupport {
+	sort.Slice(annotations, func(i, j int) bool {
+		return annotations[i].Annotation < annotations[j].Annotation
+	})
+
+	return annotations
 }
 
 func toMarkdown(input string) template.HTML {
