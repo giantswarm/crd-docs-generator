@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Add flag `--template` to specify the template path
+- Render annotations with documentation in CRDs.
 
 ## [0.3.0] - 2021-02-02
 
