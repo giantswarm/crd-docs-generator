@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.8.13
+  architect: giantswarm/architect@1.1.1
 
 workflows:
   build-workflow:
@@ -22,7 +22,7 @@ workflows:
           filters:
             tags:
               only: /^v.*/
-      
+
       - architect/push-to-docker:
           name: push-crd-docs-generator-to-quay
           image: quay.io/giantswarm/crd-docs-generator

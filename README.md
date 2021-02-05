@@ -14,7 +14,7 @@ The generated output consists of Markdown files packed with HTML. By itself, thi
 This tool relies on:
 
 - CRDs being defined in the [giantswarm/apiextensions](https://github.com/giantswarm/apiextensions) repository
-- ... as one YAML file per CRD in the [apiextensions `docs/crd` folder](https://github.com/giantswarm/apiextensions/tree/master/docs/crd) folder.
+- ... as one YAML file per CRD in the [apiextensions `config/crd/v1` folder](https://github.com/giantswarm/apiextensions/tree/master/config/crd/v1) folder.
 - CRDs providing an OpenAPIv3 validation schema
   - either in the `.spec.validation` section of a CRD containg only one version
   - or in the `.spec.versions[*].schema` position of a CRD containing multiple versions

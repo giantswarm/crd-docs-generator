@@ -10,7 +10,7 @@ import (
 
 	"github.com/Masterminds/sprig"
 	"github.com/giantswarm/microerror"
-	blackfriday "gopkg.in/russross/blackfriday.v2"
+	blackfriday "github.com/russross/blackfriday/v2"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 
@@ -69,8 +69,8 @@ type SchemaVersion struct {
 }
 
 // WritePage creates a CRD schema documentation Markdown page.
-func WritePage(crd *apiextensionsv1.CustomResourceDefinition, annotations []CRDAnnotationSupport, crFolder, outputFolder, repoURL, repoRef, templateFolderPath, outputTemplate string) error {
-	templateCode, err := ioutil.ReadFile(templateFolderPath + "/" + outputTemplate)
+func WritePage(crd *apiextensionsv1.CustomResourceDefinition, annotations []CRDAnnotationSupport, crFolder, outputFolder, repoURL, repoRef, templatePath string) error {
+	templateCode, err := ioutil.ReadFile(templatePath)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -81,6 +81,8 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition, annotations []CRDA
 	funcMap["markdown"] = toMarkdown
 	// Join strings by separator
 	funcMap["join"] = strings.Join
+	// Return raw string
+	funcMap["raw"] = rawString
 
 	// Read our output template.
 	tpl := template.Must(template.New("schemapage").Funcs(funcMap).Parse(string(templateCode)))
@@ -185,6 +187,12 @@ func toMarkdown(input string) template.HTML {
 	// To mitigate gosec "this method will not auto-escape HTML. Verify data is well formed"
 	// #nosec G203
 	return template.HTML(blackfriday.Run(inputBytes))
+}
+
+func rawString(input string) template.HTML {
+	// To mitigate gosec "this method will not auto-escape HTML. Verify data is well formed"
+	// #nosec G203
+	return template.HTML(input)
 }
 
 // flattenProperties recurses over all properties of a JSON Schema
