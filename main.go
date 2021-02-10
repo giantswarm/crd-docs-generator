@@ -3,6 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"go/ast"
+	"go/doc"
+	"go/parser"
+	"go/token"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -10,6 +16,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	"github.com/giantswarm/crd-docs-generator/service/config"
 	"github.com/giantswarm/crd-docs-generator/service/crd"
@@ -33,6 +40,18 @@ type CRDDocsGenerator struct {
 	templateFilePath string
 }
 
+// Types to read annoatations documentation and CRD support
+type AnnotationSupportRelease struct {
+	Release    string
+	APIVersion string
+	CRD        string
+}
+
+type Annotation struct {
+	Documentation string
+	Support       []AnnotationSupportRelease
+}
+
 const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
@@ -40,6 +59,8 @@ const (
 	crdFolder = repoFolder + "/config/crd/v1"
 
 	crFolder = repoFolder + "/docs/cr"
+
+	annotationsFolder = repoFolder + "/pkg/annotation"
 
 	// Path for Markdown output.
 	outputFolderPath = "./output"
@@ -78,6 +99,7 @@ func generateCrdDocs(configFilePath, templatePath string) error {
 	}
 
 	crdFiles := []string{}
+	annotationFiles := []string{}
 
 	err = git.CloneRepositoryShallow(
 		configuration.SourceRepository.Organization,
@@ -90,6 +112,18 @@ func generateCrdDocs(configFilePath, templatePath string) error {
 
 	defer os.RemoveAll(repoFolder)
 
+	err = filepath.Walk(annotationsFolder, func(path string, info os.FileInfo, err error) error {
+		fmt.Println(path)
+		if strings.HasSuffix(path, ".go") {
+			fmt.Printf("Collecting file %s\n", path)
+			annotationFiles = append(annotationFiles, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	err = filepath.Walk(crdFolder, func(path string, info os.FileInfo, err error) error {
 		fmt.Println(path)
 		if strings.HasSuffix(path, ".yaml") {
@@ -100,6 +134,42 @@ func generateCrdDocs(configFilePath, templatePath string) error {
 	})
 	if err != nil {
 		return microerror.Mask(err)
+	}
+
+	var annotations []output.CRDAnnotationSupport
+	for _, annotationFile := range annotationFiles {
+		fset := token.NewFileSet()
+		files := []*ast.File{
+			mustParse(fset, annotationFile),
+		}
+		p, err := doc.NewFromFiles(fset, files, "github.com/giantswarm/extract-go-doc/p")
+		if err != nil {
+			panic(err)
+		}
+		for _, constant := range p.Consts {
+			annotation := Annotation{}
+
+			err := yaml.Unmarshal([]byte(constant.Doc), &annotation)
+			if err != nil {
+				log.Printf("%s has no yaml documentation", constant.Names[0])
+			}
+
+			if annotation.Documentation != "" {
+				for _, crdAPI := range annotation.Support {
+
+					rawAnnotation := constant.Decl.Specs[0].(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
+					annotationValue := strings.Replace(rawAnnotation, "\"", "", -1)
+
+					annotations = append(annotations, output.CRDAnnotationSupport{
+						Annotation:    annotationValue,
+						APIVersion:    crdAPI.APIVersion,
+						CRDName:       crdAPI.CRD,
+						Release:       crdAPI.Release,
+						Documentation: annotation.Documentation,
+					})
+				}
+			}
+		}
 	}
 
 	for _, crdFile := range crdFiles {
@@ -117,6 +187,7 @@ func generateCrdDocs(configFilePath, templatePath string) error {
 
 			err = output.WritePage(
 				crd,
+				annotations,
 				crFolder,
 				outputFolderPath,
 				configuration.SourceRepository.URL,
@@ -160,4 +231,16 @@ func printStackTrace(err error) {
 	for _, entry := range stackedError.Stack {
 		fmt.Printf("%s:%d\n", entry.File, entry.Line)
 	}
+}
+
+func mustParse(fset *token.FileSet, filename string) *ast.File {
+	src, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	f, err := parser.ParseFile(fset, filename, src, parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	return f
 }

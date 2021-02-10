@@ -32,6 +32,15 @@ type SchemaProperty struct {
 	Required bool
 }
 
+// CRDAnnotationSupport represents the release and
+type CRDAnnotationSupport struct {
+	Annotation    string
+	APIVersion    string
+	CRDName       string
+	Release       string
+	Documentation string
+}
+
 // PageData is all the data we pass to the HTML template for the CRD detail page.
 type PageData struct {
 	Description         string
@@ -55,11 +64,12 @@ type SchemaVersion struct {
 	Version    string
 	Properties []SchemaProperty
 	// YAML string showing an example CR.
-	ExampleCR string
+	ExampleCR   string
+	Annotations []CRDAnnotationSupport
 }
 
 // WritePage creates a CRD schema documentation Markdown page.
-func WritePage(crd *apiextensionsv1.CustomResourceDefinition, crFolder, outputFolder, repoURL, repoRef, templatePath string) error {
+func WritePage(crd *apiextensionsv1.CustomResourceDefinition, annotations []CRDAnnotationSupport, crFolder, outputFolder, repoURL, repoRef, templatePath string) error {
 	templateCode, err := ioutil.ReadFile(templatePath)
 	if err != nil {
 		return microerror.Mask(err)
@@ -111,8 +121,9 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition, crFolder, outputFo
 		}
 
 		data.VersionSchemas[version.Name] = SchemaVersion{
-			Version:    version.Name,
-			Properties: properties,
+			Version:     version.Name,
+			Properties:  properties,
+			Annotations: sortAnnotations(filterAnnotations(annotations, crd.GetObjectMeta().GetName(), version.Name)),
 		}
 
 		data.Versions = append(data.Versions, version.Name)
@@ -149,6 +160,26 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition, crFolder, outputFo
 	}
 
 	return nil
+}
+
+func filterAnnotations(annotations []CRDAnnotationSupport, CRDName string, APIVersion string) []CRDAnnotationSupport {
+	var result []CRDAnnotationSupport
+
+	for _, annotation := range annotations {
+		if annotation.CRDName == CRDName && annotation.APIVersion == APIVersion {
+			result = append(result, annotation)
+		}
+	}
+
+	return result
+}
+
+func sortAnnotations(annotations []CRDAnnotationSupport) []CRDAnnotationSupport {
+	sort.Slice(annotations, func(i, j int) bool {
+		return annotations[i].Annotation < annotations[j].Annotation
+	})
+
+	return annotations
 }
 
 func toMarkdown(input string) template.HTML {
