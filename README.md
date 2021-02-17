@@ -31,13 +31,18 @@ docker run \
     -v $PWD/path/to/output-folder:/opt/crd-docs-generator/output \
     -v $PWD:/opt/crd-docs-generator/config \
     quay.io/giantswarm/crd-docs-generator \
-      --config /opt/crd-docs-generator/config/config.yaml
+      --version v1.2.3 \
+      --config /opt/crd-docs-generator/config/config.yaml \
+      --template /opt/crd-docs-generator/config/crd.template
 ```
 
 or in Go like this:
 
 ```nohighlight
-go run main.go --config service/config/testdata/config1.yaml
+go run main.go \
+  --config service/config/testdata/config1.yaml \
+  --version v1.2.3 \
+  --template ./crd.template
 ```
 
 The volume mapping defines where the generated output will land.
