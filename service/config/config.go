@@ -17,10 +17,9 @@ type FromFile struct {
 // FromFileSourceRepository has details about the
 // source repository to use for CRDs.
 type FromFileSourceRepository struct {
-	URL             string `yaml:"url"`
-	Organization    string `yaml:"organization"`
-	ShortName       string `yaml:"short_name"`
-	CommitReference string `yaml:"commit_reference"`
+	URL          string `yaml:"url"`
+	Organization string `yaml:"organization"`
+	ShortName    string `yaml:"short_name"`
 }
 
 // Read reads a config file and returns a struct.

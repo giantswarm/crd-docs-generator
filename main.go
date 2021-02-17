@@ -38,6 +38,9 @@ type CRDDocsGenerator struct {
 
 	// Path to the CRD page template file
 	templateFilePath string
+
+	// git reference (tag, commit SHA, branch name) to check out for thee source repository
+	sourceVersionRef string
 }
 
 // Types to read annoatations documentation and CRD support
@@ -76,12 +79,15 @@ func main() {
 			Short:        "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
 			SilenceUsage: true,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return generateCrdDocs(crdDocsGenerator.configFilePath, crdDocsGenerator.templateFilePath)
+				return generateCrdDocs(crdDocsGenerator.configFilePath,
+					crdDocsGenerator.templateFilePath,
+					crdDocsGenerator.sourceVersionRef)
 			},
 		}
 
 		c.PersistentFlags().StringVar(&crdDocsGenerator.configFilePath, "config", "./config.yaml", "Path to the configuration file.")
 		c.PersistentFlags().StringVar(&crdDocsGenerator.templateFilePath, "template", "./templates/crd.template", "Path to the CRD page template file.")
+		c.PersistentFlags().StringVar(&crdDocsGenerator.sourceVersionRef, "version", "main", "Commit SHA, tag or branch name to use of the CRD source repository.")
 		crdDocsGenerator.rootCommand = c
 	}
 
@@ -92,7 +98,7 @@ func main() {
 }
 
 // generateCrdDocs is the function called from our main CLI command.
-func generateCrdDocs(configFilePath, templatePath string) error {
+func generateCrdDocs(configFilePath, templatePath, versionRef string) error {
 	configuration, err := config.Read(configFilePath)
 	if err != nil {
 		return microerror.Mask(err)
@@ -104,7 +110,7 @@ func generateCrdDocs(configFilePath, templatePath string) error {
 	err = git.CloneRepositoryShallow(
 		configuration.SourceRepository.Organization,
 		configuration.SourceRepository.ShortName,
-		configuration.SourceRepository.CommitReference,
+		versionRef,
 		repoFolder)
 	if err != nil {
 		return microerror.Mask(err)
