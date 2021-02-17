@@ -197,7 +197,7 @@ func generateCrdDocs(configFilePath, templatePath, versionRef string) error {
 				crFolder,
 				outputFolderPath,
 				configuration.SourceRepository.URL,
-				configuration.SourceRepository.CommitReference,
+				versionRef,
 				templatePath)
 			if err != nil {
 				fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
