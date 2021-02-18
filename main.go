@@ -40,7 +40,7 @@ type CRDDocsGenerator struct {
 	templateFilePath string
 
 	// git reference (tag, commit SHA, branch name) to check out for thee source repository
-	sourceVersionRef string
+	sourceCommitRef string
 }
 
 // Types to read annoatations documentation and CRD support
@@ -81,13 +81,13 @@ func main() {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return generateCrdDocs(crdDocsGenerator.configFilePath,
 					crdDocsGenerator.templateFilePath,
-					crdDocsGenerator.sourceVersionRef)
+					crdDocsGenerator.sourceCommitRef)
 			},
 		}
 
 		c.PersistentFlags().StringVar(&crdDocsGenerator.configFilePath, "config", "./config.yaml", "Path to the configuration file.")
 		c.PersistentFlags().StringVar(&crdDocsGenerator.templateFilePath, "template", "./templates/crd.template", "Path to the CRD page template file.")
-		c.PersistentFlags().StringVar(&crdDocsGenerator.sourceVersionRef, "version", "main", "Commit SHA, tag or branch name to use of the CRD source repository.")
+		c.PersistentFlags().StringVar(&crdDocsGenerator.sourceCommitRef, "commit-reference", "main", "Commit SHA, tag or branch name to use of the CRD source repository.")
 		crdDocsGenerator.rootCommand = c
 	}
 
@@ -98,7 +98,7 @@ func main() {
 }
 
 // generateCrdDocs is the function called from our main CLI command.
-func generateCrdDocs(configFilePath, templatePath, versionRef string) error {
+func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 	configuration, err := config.Read(configFilePath)
 	if err != nil {
 		return microerror.Mask(err)
@@ -110,7 +110,7 @@ func generateCrdDocs(configFilePath, templatePath, versionRef string) error {
 	err = git.CloneRepositoryShallow(
 		configuration.SourceRepository.Organization,
 		configuration.SourceRepository.ShortName,
-		versionRef,
+		commitRef,
 		repoFolder)
 	if err != nil {
 		return microerror.Mask(err)
@@ -197,7 +197,7 @@ func generateCrdDocs(configFilePath, templatePath, versionRef string) error {
 				crFolder,
 				outputFolderPath,
 				configuration.SourceRepository.URL,
-				versionRef,
+				commitRef,
 				templatePath)
 			if err != nil {
 				fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)

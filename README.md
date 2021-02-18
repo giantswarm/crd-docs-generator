@@ -31,7 +31,7 @@ docker run \
     -v $PWD/path/to/output-folder:/opt/crd-docs-generator/output \
     -v $PWD:/opt/crd-docs-generator/config \
     quay.io/giantswarm/crd-docs-generator \
-      --version v1.2.3 \
+      --commit-reference v1.2.3 \
       --config /opt/crd-docs-generator/config/config.yaml \
       --template /opt/crd-docs-generator/config/crd.template
 ```
@@ -41,7 +41,7 @@ or in Go like this:
 ```nohighlight
 go run main.go \
   --config service/config/testdata/config1.yaml \
-  --version v1.2.3 \
+  --commit-reference v1.2.3 \
   --template ./crd.template
 ```
 
