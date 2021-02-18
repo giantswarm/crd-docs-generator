@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Breaking: Remove configuration option `commit_reference`, add command line flag `--version` for the same purpose instead.
+- Breaking: Remove configuration option `commit_reference`, add command line flag `--commit-reference` for the same purpose instead.
 
 ## [0.4.0] - 2021-02-12
 
