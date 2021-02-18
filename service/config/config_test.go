@@ -22,10 +22,9 @@ func TestRead(t *testing.T) {
 			},
 			want: &FromFile{
 				SourceRepository: &FromFileSourceRepository{
-					URL:             "https://github.com/giantswarm/apiextensions",
-					Organization:    "giantswarm",
-					ShortName:       "apiextensions",
-					CommitReference: "v0.3.4",
+					URL:          "https://github.com/giantswarm/apiextensions",
+					Organization: "giantswarm",
+					ShortName:    "apiextensions",
 				},
 				SkipCRDs: []string{
 					"memcachedconfigs.example.giantswarm.io",
