@@ -39,7 +39,7 @@ type CRDDocsGenerator struct {
 	// Path to the CRD page template file
 	templateFilePath string
 
-	// git reference (tag, commit SHA, branch name) to check out for thee source repository
+	// git reference (tag, commit SHA, branch name) to check out for the source repository
 	sourceCommitRef string
 }
 
