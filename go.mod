@@ -16,4 +16,7 @@ require (
 	k8s.io/apiextensions-apiserver v0.20.2
 )
 
-replace github.com/coreos/etcd => github.com/coreos/etcd v3.3.25+incompatible
+replace (
+	github.com/coreos/etcd => github.com/coreos/etcd v3.3.25+incompatible
+	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2 // CVE-2021-3121
+)
