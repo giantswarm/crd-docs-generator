@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Change path where to look for CRD YAML in giantswarm/apiextensions from `/config/crd/v1` to `/config/crd`.
+
 ## [0.5.0] - 2021-02-18
 
 - Breaking: Remove configuration option `commit_reference`, add command line flag `--commit-reference` for the same purpose instead.
