@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add support for another apiextensions repo path `/helm/**/upstream.yaml`.
+- Parse multiple CRDs from a single YAML file.
+
 ## [0.6.0] - 2021-05-14
 
 - Change path where to look for CRD YAML in giantswarm/apiextensions from `/config/crd/v1` to `/config/crd`.
