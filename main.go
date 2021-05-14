@@ -59,7 +59,13 @@ const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
 
+	// Source folder for Giant Swarm CRDs in YAML format in the apiextensions repo.
 	crdFolder = repoFolder + "/config/crd"
+
+	// Source folder for upstream CRDs in YAML format in the apiextensions repo.
+	upstreamCRDFolder = repoFolder + "/helm"
+
+	upstreamFileName = "upstream.yaml"
 
 	crFolder = repoFolder + "/docs/cr"
 
@@ -142,6 +148,18 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 		return microerror.Mask(err)
 	}
 
+	err = filepath.Walk(upstreamCRDFolder, func(path string, info os.FileInfo, err error) error {
+		fmt.Println(path)
+		if strings.HasSuffix(path, upstreamFileName) {
+			fmt.Printf("Collecting upstream CRD file %s\n", path)
+			crdFiles = append(crdFiles, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	var annotations []output.CRDAnnotationSupport
 	for _, annotationFile := range annotationFiles {
 		fset := token.NewFileSet()
@@ -181,18 +199,21 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 	for _, crdFile := range crdFiles {
 		fmt.Printf("Reading file %s\n", crdFile)
 
-		crd, err := crd.Read(crdFile)
+		crds, err := crd.Read(crdFile)
 		if err != nil {
-			fmt.Printf("Something went wrong in ReadCRD: %#v\n", err)
+			fmt.Printf("Something went wrong in crd.Read: %#v\n", err)
 		}
 
-		if contains(configuration.SkipCRDs, crd.Name) {
-			fmt.Printf("Skipping CRD %s\n", crd.Name)
-		} else {
-			fmt.Printf("Writing output for CRD %s\n", crd.Name)
+		for _, thisCRD := range crds {
+			if contains(configuration.SkipCRDs, thisCRD.Name) {
+				fmt.Printf("Skipping CRD %s\n", thisCRD.Name)
+				continue
+			}
+
+			fmt.Printf("Writing output for CRD %s\n", thisCRD.Name)
 
 			err = output.WritePage(
-				crd,
+				&thisCRD,
 				annotations,
 				crFolder,
 				outputFolderPath,

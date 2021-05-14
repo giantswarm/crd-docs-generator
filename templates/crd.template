@@ -2,11 +2,12 @@
 title: {{ .Title }} CRD schema reference
 linktitle: {{ .Title }}
 technical_name: {{ .NamePlural }}.{{ .Group }}
-description: {{ if .Description -}}
-{{- .Description | indent 2 }}
-{{- else -}}
+description: |
+{{- if .Description }}
+{{ .Description | indent 2 }}
+{{- else }}
   Custom resource definition (CRD) schema reference page for the {{ .Title }} resource ({{ .NamePlural }}.{{ .Group }}), as part of the Giant Swarm Management API documentation.
-{{ end }}
+{{- end }}
 weight: {{ .Weight }}
 source_repository: {{ .SourceRepository }}
 source_repository_ref: {{ .SourceRepositoryRef }}
