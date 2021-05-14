@@ -29,6 +29,11 @@ func Read(filePath string) ([]apiextensionsv1.CustomResourceDefinition, error) {
 			return nil, microerror.Maskf(CouldNotParseCRDFileError, err.Error())
 		}
 
+		// If we had empty parts parsed, let's skip them.
+		if crd.Name == "" {
+			continue
+		}
+
 		crds = append(crds, crd)
 	}
 
