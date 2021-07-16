@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestRead(t *testing.T) {
+func TestRead2(t *testing.T) {
 	type args struct {
 		path string
 	}
@@ -25,10 +25,8 @@ func TestRead(t *testing.T) {
 					URL:          "https://github.com/giantswarm/apiextensions",
 					Organization: "giantswarm",
 					ShortName:    "apiextensions",
-				},
-				SkipCRDs: []string{
-					"memcachedconfigs.example.giantswarm.io",
-					"releasecycles.release.giantswarm.io",
+					Ref:          "mybranch",
+					MetadataPath: "my/path.yaml",
 				},
 			},
 			wantErr: false,

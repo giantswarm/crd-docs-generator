@@ -18,10 +18,10 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 
-	"github.com/giantswarm/crd-docs-generator/service/config"
-	"github.com/giantswarm/crd-docs-generator/service/crd"
-	"github.com/giantswarm/crd-docs-generator/service/git"
-	"github.com/giantswarm/crd-docs-generator/service/output"
+	"github.com/giantswarm/crd-docs-generator/pkg/config"
+	"github.com/giantswarm/crd-docs-generator/pkg/crd"
+	"github.com/giantswarm/crd-docs-generator/pkg/git"
+	"github.com/giantswarm/crd-docs-generator/pkg/output"
 )
 
 // CRDDocsGenerator represents an instance of this command line tool, it carries
@@ -113,6 +113,7 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 	crdFiles := []string{}
 	annotationFiles := []string{}
 
+	// Clone the repository containing CRDs
 	err = git.CloneRepositoryShallow(
 		configuration.SourceRepository.Organization,
 		configuration.SourceRepository.ShortName,
@@ -124,6 +125,7 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 
 	defer os.RemoveAll(repoFolder)
 
+	// Collect annotation info
 	err = filepath.Walk(annotationsFolder, func(path string, info os.FileInfo, err error) error {
 		fmt.Println(path)
 		if strings.HasSuffix(path, ".go") {
@@ -136,6 +138,7 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 		return microerror.Mask(err)
 	}
 
+	// Collect our own CRD YAML files
 	err = filepath.Walk(crdFolder, func(path string, info os.FileInfo, err error) error {
 		fmt.Println(path)
 		if strings.HasSuffix(path, ".yaml") {
@@ -148,6 +151,7 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 		return microerror.Mask(err)
 	}
 
+	// Collect upstream CRD YAML files
 	err = filepath.Walk(upstreamCRDFolder, func(path string, info os.FileInfo, err error) error {
 		fmt.Println(path)
 		if strings.HasSuffix(path, upstreamFileName) {
@@ -160,6 +164,7 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 		return microerror.Mask(err)
 	}
 
+	// Process annotation details
 	var annotations []output.CRDAnnotationSupport
 	for _, annotationFile := range annotationFiles {
 		fset := token.NewFileSet()
@@ -205,10 +210,7 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 		}
 
 		for _, thisCRD := range crds {
-			if contains(configuration.SkipCRDs, thisCRD.Name) {
-				fmt.Printf("Skipping CRD %s\n", thisCRD.Name)
-				continue
-			}
+			// TODO: handle skipping of CRDs based on `publish` key
 
 			fmt.Printf("Writing output for CRD %s\n", thisCRD.Name)
 
