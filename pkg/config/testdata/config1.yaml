@@ -3,3 +3,4 @@ source_repository:
   organization: giantswarm
   short_name: apiextensions
   metadata_path: my/path.yaml
+template_path: my/file

@@ -27,6 +27,7 @@ func TestRead2(t *testing.T) {
 					ShortName:    "apiextensions",
 					MetadataPath: "my/path.yaml",
 				},
+				TemplatePath: "my/file",
 			},
 			wantErr: false,
 		},

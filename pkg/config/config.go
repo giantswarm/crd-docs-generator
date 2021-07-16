@@ -10,6 +10,7 @@ import (
 // FromFile represent a config file content.
 type FromFile struct {
 	SourceRepository *FromFileSourceRepository `yaml:"source_repository"`
+	TemplatePath     string                    `yaml:"template_path"`
 }
 
 // FromFileSourceRepository has details about the
