@@ -1,0 +1,13 @@
+crds:
+  crd.with.full.info:
+    owner:
+      - owner
+    topics:
+      - apps
+    provider:
+      - aws
+      - azure
+    hidden: false
+  unpublished.crd:
+    hidden: true
+  only.defaults:
