@@ -231,17 +231,6 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 	return nil
 }
 
-// contains checks whether slice contains the given item.
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-
-	return false
-}
-
 func printStackTrace(err error) {
 	fmt.Println("\n--- Stack Trace ---")
 	var stackedError microerror.JSONError
