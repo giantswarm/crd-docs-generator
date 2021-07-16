@@ -2,5 +2,4 @@ source_repository:
   url: https://github.com/giantswarm/apiextensions
   organization: giantswarm
   short_name: apiextensions
-  ref: mybranch
   metadata_path: my/path.yaml

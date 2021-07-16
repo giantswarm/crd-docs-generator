@@ -38,9 +38,6 @@ type CRDDocsGenerator struct {
 
 	// Path to the CRD page template file
 	templateFilePath string
-
-	// git reference (tag, commit SHA, branch name) to check out for the source repository
-	sourceCommitRef string
 }
 
 // Types to read annoatations documentation and CRD support
@@ -86,14 +83,12 @@ func main() {
 			SilenceUsage: true,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return generateCrdDocs(crdDocsGenerator.configFilePath,
-					crdDocsGenerator.templateFilePath,
-					crdDocsGenerator.sourceCommitRef)
+					crdDocsGenerator.templateFilePath)
 			},
 		}
 
 		c.PersistentFlags().StringVar(&crdDocsGenerator.configFilePath, "config", "./config.yaml", "Path to the configuration file.")
 		c.PersistentFlags().StringVar(&crdDocsGenerator.templateFilePath, "template", "./templates/crd.template", "Path to the CRD page template file.")
-		c.PersistentFlags().StringVar(&crdDocsGenerator.sourceCommitRef, "commit-reference", "main", "Commit SHA, tag or branch name to use of the CRD source repository.")
 		crdDocsGenerator.rootCommand = c
 	}
 
@@ -104,7 +99,7 @@ func main() {
 }
 
 // generateCrdDocs is the function called from our main CLI command.
-func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
+func generateCrdDocs(configFilePath, templatePath string) error {
 	configuration, err := config.Read(configFilePath)
 	if err != nil {
 		return microerror.Mask(err)
@@ -117,7 +112,7 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 	err = git.CloneRepositoryShallow(
 		configuration.SourceRepository.Organization,
 		configuration.SourceRepository.ShortName,
-		commitRef,
+		configuration.SourceRepository.Ref,
 		repoFolder)
 	if err != nil {
 		return microerror.Mask(err)
@@ -220,7 +215,7 @@ func generateCrdDocs(configFilePath, templatePath, commitRef string) error {
 				crFolder,
 				outputFolderPath,
 				configuration.SourceRepository.URL,
-				commitRef,
+				configuration.SourceRepository.Ref,
 				templatePath)
 			if err != nil {
 				fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)

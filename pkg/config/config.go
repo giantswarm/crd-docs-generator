@@ -18,7 +18,6 @@ type FromFileSourceRepository struct {
 	URL          string `yaml:"url"`
 	Organization string `yaml:"organization"`
 	ShortName    string `yaml:"short_name"`
-	Ref          string `yaml:"ref"`
 	MetadataPath string `yaml:"metadata_path"`
 }
 

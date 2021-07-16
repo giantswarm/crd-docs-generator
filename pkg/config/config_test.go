@@ -25,7 +25,6 @@ func TestRead2(t *testing.T) {
 					URL:          "https://github.com/giantswarm/apiextensions",
 					Organization: "giantswarm",
 					ShortName:    "apiextensions",
-					Ref:          "mybranch",
 					MetadataPath: "my/path.yaml",
 				},
 			},
