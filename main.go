@@ -9,6 +9,7 @@ import (
 	"go/token"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 
 	"strings"
@@ -213,6 +214,8 @@ func generateCrdDocs(configFilePath, commitRef string) error {
 				continue
 			}
 
+			templatePath := path.Dir(configFilePath) + "/" + configuration.TemplatePath
+
 			err = output.WritePage(
 				&thisCRD,
 				annotations,
@@ -223,7 +226,7 @@ func generateCrdDocs(configFilePath, commitRef string) error {
 				outputFolderPath,
 				configuration.SourceRepository.URL,
 				commitRef,
-				configuration.TemplatePath)
+				templatePath)
 			if err != nil {
 				fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
 			}
