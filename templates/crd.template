@@ -1,7 +1,6 @@
 ---
-title: {{ .Title }} CRD schema reference
-linktitle: {{ .Title }}
-technical_name: {{ .NamePlural }}.{{ .Group }}
+title: {{ .Title }} CRD schema reference (group {{ .Group }})
+linkTitle: {{ .Title }}
 description: |
 {{- if .Description }}
 {{ .Description | indent 2 }}
@@ -9,11 +8,37 @@ description: |
   Custom resource definition (CRD) schema reference page for the {{ .Title }} resource ({{ .NamePlural }}.{{ .Group }}), as part of the Giant Swarm Management API documentation.
 {{- end }}
 weight: {{ .Weight }}
-source_repository: {{ .SourceRepository }}
-source_repository_ref: {{ .SourceRepositoryRef }}
-layout: "crd"
+crd:
+  name_camelcase: {{ .Title }}
+  name_plural: {{ .NamePlural }}
+  name_singular: {{ .NameSingular }}
+  group: {{ .Group }}
+  technical_name: {{ .NamePlural }}.{{ .Group }}
+  scope: {{ .Scope }}
+  source_repository: {{ .SourceRepository }}
+  source_repository_ref: {{ .SourceRepositoryRef }}
+  versions:
+{{- range .Versions }}
+    - {{ . -}}
+{{- end }}
+  topics:
+{{- range .Topics }}
+    - {{ . -}}
+{{- end }}
+  providers:
+{{- range .Providers }}
+    - {{ . -}}
+{{- end }}
+layout: crd
+owner:
+{{- range .Owners }}
+  - {{ . -}}
+{{- end }}
 aliases:
   - /reference/cp-k8s-api/{{ .NamePlural }}.{{ .Group }}/
+technical_name: {{ .NamePlural }}.{{ .Group }}
+source_repository: {{ .SourceRepository }}
+source_repository_ref: {{ .SourceRepositoryRef }}
 ---
 
 # {{ .Title }}
