@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestRead2(t *testing.T) {
+func TestRead(t *testing.T) {
 	type args struct {
 		path string
 	}
