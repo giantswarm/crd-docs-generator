@@ -211,6 +211,7 @@ func generateCrdDocs(configFilePath, commitRef string) error {
 				continue
 			}
 			if meta.Hidden {
+				fmt.Printf("%s - is hidden explicitly, skipping\n", thisCRD.Name)
 				continue
 			}
 
