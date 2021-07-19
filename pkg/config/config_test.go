@@ -25,11 +25,9 @@ func TestRead(t *testing.T) {
 					URL:          "https://github.com/giantswarm/apiextensions",
 					Organization: "giantswarm",
 					ShortName:    "apiextensions",
+					MetadataPath: "my/path.yaml",
 				},
-				SkipCRDs: []string{
-					"memcachedconfigs.example.giantswarm.io",
-					"releasecycles.release.giantswarm.io",
-				},
+				TemplatePath: "my/file",
 			},
 			wantErr: false,
 		},

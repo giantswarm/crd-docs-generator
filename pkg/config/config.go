@@ -2,7 +2,6 @@ package config
 
 import (
 	"io/ioutil"
-	"sort"
 
 	"github.com/giantswarm/microerror"
 	"gopkg.in/yaml.v2"
@@ -11,7 +10,7 @@ import (
 // FromFile represent a config file content.
 type FromFile struct {
 	SourceRepository *FromFileSourceRepository `yaml:"source_repository"`
-	SkipCRDs         []string                  `yaml:"skip_crds"`
+	TemplatePath     string                    `yaml:"template_path"`
 }
 
 // FromFileSourceRepository has details about the
@@ -20,6 +19,7 @@ type FromFileSourceRepository struct {
 	URL          string `yaml:"url"`
 	Organization string `yaml:"organization"`
 	ShortName    string `yaml:"short_name"`
+	MetadataPath string `yaml:"metadata_path"`
 }
 
 // Read reads a config file and returns a struct.
@@ -35,11 +35,6 @@ func Read(path string) (*FromFile, error) {
 	if err != nil {
 		return nil, microerror.Maskf(CouldNotParseConfigFileError, err.Error())
 	}
-
-	// Stable sorting for reproducible test results
-	sort.Slice(f.SkipCRDs, func(i, j int) bool {
-		return j > i
-	})
 
 	return &f, nil
 }

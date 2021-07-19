@@ -47,6 +47,9 @@ type PageData struct {
 	Group               string
 	NamePlural          string
 	NameSingular        string
+	Owners              []string
+	Topics              []string
+	Providers           []string
 	Scope               string
 	SourceRepository    string
 	SourceRepositoryRef string
@@ -69,7 +72,17 @@ type SchemaVersion struct {
 }
 
 // WritePage creates a CRD schema documentation Markdown page.
-func WritePage(crd *apiextensionsv1.CustomResourceDefinition, annotations []CRDAnnotationSupport, crFolder, outputFolder, repoURL, repoRef, templatePath string) error {
+func WritePage(crd *apiextensionsv1.CustomResourceDefinition,
+	annotations []CRDAnnotationSupport,
+	owners []string,
+	topics []string,
+	providers []string,
+	crFolder,
+	outputFolder,
+	repoURL,
+	repoRef,
+	templatePath string) error {
+
 	templateCode, err := ioutil.ReadFile(templatePath)
 	if err != nil {
 		return microerror.Mask(err)
@@ -92,6 +105,9 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition, annotations []CRDA
 		Group:               crd.Spec.Group,
 		NamePlural:          crd.Spec.Names.Plural,
 		NameSingular:        crd.Spec.Names.Singular,
+		Owners:              owners,
+		Topics:              topics,
+		Providers:           providers,
 		Scope:               string(crd.Spec.Scope),
 		SourceRepository:    repoURL,
 		SourceRepositoryRef: repoRef,
@@ -134,7 +150,7 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition, annotations []CRDA
 		crFileName := fmt.Sprintf("%s/%s_%s_%s.yaml", crFolder, crd.Spec.Group, version, crd.Spec.Names.Singular)
 		exampleCR, err := ioutil.ReadFile(crFileName)
 		if err != nil {
-			fmt.Printf("Error when reading example CR file: %s\n", err)
+			fmt.Printf("%s - CR example is missing\n", crd.Name)
 		} else {
 			outputSchema := data.VersionSchemas[version]
 			outputSchema.ExampleCR = string(exampleCR)
