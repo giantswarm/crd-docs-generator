@@ -220,9 +220,7 @@ func generateCrdDocs(configFilePath, commitRef string) error {
 			err = output.WritePage(
 				&thisCRD,
 				annotations,
-				meta.Owner,
-				meta.Topics,
-				meta.Providers,
+				meta,
 				crFolder,
 				outputFolderPath,
 				configuration.SourceRepository.URL,
