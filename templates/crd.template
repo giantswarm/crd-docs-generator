@@ -22,16 +22,31 @@ crd:
     - {{ . -}}
 {{- end }}
   topics:
-{{- range .Topics }}
+{{- with .Metadata.Topics }}
+{{- range . }}
     - {{ . -}}
 {{- end }}
+{{- end }}
+{{- with .Metadata.Providers }}
   providers:
-{{- range .Providers }}
+{{- range . }}
     - {{ . -}}
+{{- end }}
+{{- end }}
+{{- with .Metadata.Deprecation }}
+  deprecation:
+{{- with .Info }}
+    info: {{ . }}
+{{- end }}
+{{- with .ReplacedBy }}
+    replaced_by:
+      full_name: {{ .FullName }}
+      short_name: {{ .ShortName }}
+{{- end }}
 {{- end }}
 layout: crd
 owner:
-{{- range .Owners }}
+{{- range .Metadata.Owners }}
   - {{ . -}}
 {{- end }}
 aliases:
