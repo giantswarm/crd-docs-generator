@@ -21,7 +21,7 @@ func TestRead(t *testing.T) {
 			want: &Root{
 				CRDs: map[string]CRDItem{
 					"crd.with.full.info": {
-						Owner:     []string{"owner"},
+						Owners:    []string{"owner"},
 						Topics:    []string{"apps"},
 						Providers: []string{"aws", "azure"},
 						Hidden:    false,
@@ -31,6 +31,21 @@ func TestRead(t *testing.T) {
 					},
 					"only.defaults": {
 						Hidden: false,
+					},
+					"deprecated.crd": {
+						Hidden: false,
+						Deprecation: &Deprecation{
+							ReplacedBy: &DeprecationReplacedBy{
+								FullName:  "new.full.crd.name",
+								ShortName: "New",
+							},
+						},
+					},
+					"simply.deprecated.crd": {
+						Hidden: false,
+						Deprecation: &Deprecation{
+							Info: "This CRD is deprecated",
+						},
 					},
 				},
 			},

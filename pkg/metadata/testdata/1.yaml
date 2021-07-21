@@ -11,3 +11,11 @@ crds:
   unpublished.crd:
     hidden: true
   only.defaults:
+  deprecated.crd:
+    deprecation:
+      replaced_by:
+        full_name:  new.full.crd.name
+        short_name: New
+  simply.deprecated.crd:
+    deprecation:
+      info: This CRD is deprecated

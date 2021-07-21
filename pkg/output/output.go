@@ -12,6 +12,8 @@ import (
 	"github.com/giantswarm/microerror"
 	blackfriday "github.com/russross/blackfriday/v2"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+
+	"github.com/giantswarm/crd-docs-generator/pkg/metadata"
 )
 
 // SchemaProperty is a simplistic, flattened representation of a property
@@ -44,12 +46,10 @@ type CRDAnnotationSupport struct {
 // PageData is all the data we pass to the HTML template for the CRD detail page.
 type PageData struct {
 	Description         string
+	Metadata            metadata.CRDItem
 	Group               string
 	NamePlural          string
 	NameSingular        string
-	Owners              []string
-	Topics              []string
-	Providers           []string
 	Scope               string
 	SourceRepository    string
 	SourceRepositoryRef string
@@ -74,9 +74,7 @@ type SchemaVersion struct {
 // WritePage creates a CRD schema documentation Markdown page.
 func WritePage(crd *apiextensionsv1.CustomResourceDefinition,
 	annotations []CRDAnnotationSupport,
-	owners []string,
-	topics []string,
-	providers []string,
+	md metadata.CRDItem,
 	crFolder,
 	outputFolder,
 	repoURL,
@@ -103,11 +101,9 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition,
 	// Collect values to pass to our output template.
 	data := PageData{
 		Group:               crd.Spec.Group,
+		Metadata:            md,
 		NamePlural:          crd.Spec.Names.Plural,
 		NameSingular:        crd.Spec.Names.Singular,
-		Owners:              owners,
-		Topics:              topics,
-		Providers:           providers,
 		Scope:               string(crd.Spec.Scope),
 		SourceRepository:    repoURL,
 		SourceRepositoryRef: repoRef,
