@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.1] - 2021-07-21
 
+- Pass through deprecation metadata from apiextensions to output (https://github.com/giantswarm/crd-docs-generator/pull/46)
+
 ## [0.7.0] - 2021-07-19
+
+- Use metadata from the apiextensions repository (https://github.com/giantswarm/crd-docs-generator/pull/44)
 
 ## [0.6.1] - 2021-05-14
 
