@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Update jwt-go dependency
+
 ## [0.7.1] - 2021-07-21
 
 - Pass through deprecation metadata from apiextensions to output (https://github.com/giantswarm/crd-docs-generator/pull/46)
