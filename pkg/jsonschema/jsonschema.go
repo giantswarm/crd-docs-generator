@@ -27,7 +27,7 @@ type Property struct {
 
 // Flatten recurses over all properties of a JSON Schema
 // and returns a flat slice of the elements we need for our output.
-func Flatten(schema *apiextensionsv1.JSONSchemaProps, properties []Property, depth int8, pathPrefix string) []Property {
+func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, depth int8, pathPrefix string) []Property {
 	// Capture names of required properties.
 	requiredProps := make(map[string]bool)
 	for _, p := range schema.Required {
@@ -55,7 +55,7 @@ func Flatten(schema *apiextensionsv1.JSONSchemaProps, properties []Property, dep
 		properties = append(properties, property)
 
 		if len(schemaProps.Properties) > 0 {
-			properties = Flatten(&schemaProps, properties, depth+1, path)
+			properties = Flatten(schemaProps, properties, depth+1, path)
 		}
 
 		if schemaProps.Type == "array" && schemaProps.Items != nil {
@@ -70,7 +70,7 @@ func Flatten(schema *apiextensionsv1.JSONSchemaProps, properties []Property, dep
 			properties = append(properties, property)
 
 			// Collect sub items properties
-			properties = Flatten(schemaProps.Items.Schema, properties, depth+2, path+"[*]")
+			properties = Flatten(*schemaProps.Items.Schema, properties, depth+2, path+"[*]")
 		}
 	}
 

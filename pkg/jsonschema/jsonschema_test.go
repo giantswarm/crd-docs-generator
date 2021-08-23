@@ -9,7 +9,7 @@ import (
 
 func TestFlatten(t *testing.T) {
 	type args struct {
-		schema     *apiextensionsv1.JSONSchemaProps
+		schema     apiextensionsv1.JSONSchemaProps
 		properties []Property
 		depth      int8
 		pathPrefix string
@@ -22,7 +22,7 @@ func TestFlatten(t *testing.T) {
 		{
 			name: "Nested schema",
 			args: args{
-				schema: &apiextensionsv1.JSONSchemaProps{
+				schema: apiextensionsv1.JSONSchemaProps{
 					ID:          "root",
 					Description: "top description",
 					Type:        "object",

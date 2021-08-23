@@ -112,7 +112,7 @@ func WritePage(crd *apiextensionsv1.CustomResourceDefinition,
 		var properties []jsonschema.Property
 
 		if version.Schema != nil && version.Schema.OpenAPIV3Schema != nil {
-			properties = jsonschema.Flatten(version.Schema.OpenAPIV3Schema, properties, 0, "")
+			properties = jsonschema.Flatten(*version.Schema.OpenAPIV3Schema, properties, 0, "")
 		}
 
 		data.VersionSchemas[version.Name] = SchemaVersion{
