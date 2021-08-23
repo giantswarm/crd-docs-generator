@@ -203,22 +203,22 @@ func generateCrdDocs(configFilePath, commitRef string) error {
 			fmt.Printf("Something went wrong in crd.Read: %#v\n", err)
 		}
 
-		for _, thisCRD := range crds {
+		for i := range crds {
 			// Skip hidden CRDs and CRDs with missing metadata
-			meta, ok := md.CRDs[thisCRD.Name]
+			meta, ok := md.CRDs[crds[i].Name]
 			if !ok {
-				fmt.Printf("%s - metadata is missing, skipping\n", thisCRD.Name)
+				fmt.Printf("%s - metadata is missing, skipping\n", crds[i].Name)
 				continue
 			}
 			if meta.Hidden {
-				fmt.Printf("%s - is hidden explicitly, skipping\n", thisCRD.Name)
+				fmt.Printf("%s - is hidden explicitly, skipping\n", crds[i].Name)
 				continue
 			}
 
 			templatePath := path.Dir(configFilePath) + "/" + configuration.TemplatePath
 
 			err = output.WritePage(
-				&thisCRD,
+				crds[i],
 				annotations,
 				meta,
 				crFolder,
