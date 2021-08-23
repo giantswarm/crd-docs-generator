@@ -55,7 +55,7 @@ type SchemaVersion struct {
 }
 
 // WritePage creates a CRD schema documentation Markdown page.
-func WritePage(crd *apiextensionsv1.CustomResourceDefinition,
+func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	annotations []CRDAnnotationSupport,
 	md metadata.CRDItem,
 	crFolder,
