@@ -62,11 +62,11 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	outputFolder,
 	repoURL,
 	repoRef,
-	templatePath string) error {
+	templatePath string) (string, error) {
 
 	templateCode, err := ioutil.ReadFile(templatePath)
 	if err != nil {
-		return microerror.Mask(err)
+		return "", microerror.Maskf(cannotOpenTemplate, "Could not read template file %s: %s", templatePath, err)
 	}
 
 	// Add custom functions support for our template.
@@ -142,7 +142,7 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 
 	handler, err := os.Create(outputFile)
 	if err != nil {
-		return microerror.Mask(err)
+		return "", microerror.Mask(err)
 	}
 
 	err = tpl.Execute(handler, data)
@@ -154,7 +154,7 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 		fmt.Printf("%s: %s\n", outputFile, err)
 	}
 
-	return nil
+	return outputFile, nil
 }
 
 func filterAnnotations(annotations []CRDAnnotationSupport, CRDName string, APIVersion string) []CRDAnnotationSupport {
