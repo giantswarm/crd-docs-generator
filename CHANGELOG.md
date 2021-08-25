@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update jwt-go dependency
 - Refactoring to enable better testing
+- Add test for output package
 
 ## [0.7.1] - 2021-07-21
 

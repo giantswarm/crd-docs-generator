@@ -217,7 +217,7 @@ func generateCrdDocs(configFilePath, commitRef string) error {
 
 			templatePath := path.Dir(configFilePath) + "/" + configuration.TemplatePath
 
-			err = output.WritePage(
+			_, err = output.WritePage(
 				crds[i],
 				annotations,
 				meta,
