@@ -95,7 +95,7 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 		VersionSchemas:      make(map[string]SchemaVersion),
 	}
 
-	// Case B: CRD contains multiple versions and schemas.
+	// Iterate schema versions
 	for _, version := range crd.Spec.Versions {
 		if !version.Served && !version.Storage {
 			// Neither stored nore served means that this version
