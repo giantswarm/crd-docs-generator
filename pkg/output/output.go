@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Masterminds/sprig"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/giantswarm/microerror"
 	blackfriday "github.com/russross/blackfriday/v2"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
