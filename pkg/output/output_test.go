@@ -11,7 +11,7 @@ import (
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/crd-docs-generator/pkg/metadata"
+	"github.com/giantswarm/crd-docs-generator/pkg/config"
 )
 
 var (
@@ -27,7 +27,7 @@ func TestWritePage(t *testing.T) {
 	type args struct {
 		crd          apiextensionsv1.CustomResourceDefinition
 		annotations  []CRDAnnotationSupport
-		md           metadata.CRDItem
+		md           config.CRDItem
 		crFolder     string
 		repoURL      string
 		repoRef      string
@@ -87,13 +87,13 @@ func TestWritePage(t *testing.T) {
 						},
 					},
 				},
-				md: metadata.CRDItem{
+				md: config.CRDItem{
 					Owners:    []string{"first-owner", "second-owner"},
 					Topics:    []string{"first-topic", "second-topic"},
 					Providers: []string{"aws", "azure"},
-					Deprecation: &metadata.Deprecation{
+					Deprecation: &config.Deprecation{
 						Info: "This is some deprecation info",
-						ReplacedBy: &metadata.DeprecationReplacedBy{
+						ReplacedBy: &config.DeprecationReplacedBy{
 							FullName:  "another.demo.giantswarm.io",
 							ShortName: "Another",
 						},
