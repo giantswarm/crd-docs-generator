@@ -93,6 +93,27 @@ This is an example CR
 
 
 
+<h3 id="annotation-details-v1alpha1">Annotations</h3>
+
+
+<div class="annotation">
+<div class="annotation-header">
+<h3 class="annotation-path" id="v1alpha1-alpha.giantswarm.io/foo">alpha.giantswarm.io/foo</h3>
+</div>
+<div class="annotation-body">
+<div class="annotation-meta">
+<span class="annotation-release">Since v16.0.0</span>
+</div>
+
+<div class="annotation-description">
+<p>Here is some annotation documentation.</p>
+
+</div>
+
+</div>
+</div>
+
+
 
 </div>
 

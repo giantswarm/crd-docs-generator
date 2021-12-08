@@ -3,10 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"go/ast"
-	"go/doc"
-	"go/parser"
-	"go/token"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,8 +13,8 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
 
+	"github.com/giantswarm/crd-docs-generator/pkg/annotations"
 	"github.com/giantswarm/crd-docs-generator/pkg/config"
 	"github.com/giantswarm/crd-docs-generator/pkg/crd"
 	"github.com/giantswarm/crd-docs-generator/pkg/git"
@@ -36,18 +32,6 @@ type CRDDocsGenerator struct {
 
 	// Path to the config file
 	configFilePath string
-}
-
-// Types to read annoatations documentation and CRD support
-type AnnotationSupportRelease struct {
-	Release    string
-	APIVersion string
-	CRD        string
-}
-
-type Annotation struct {
-	Documentation string
-	Support       []AnnotationSupportRelease
 }
 
 const (
@@ -112,9 +96,6 @@ func generateCrdDocs(configFilePath string) error {
 		// List of source YAML files containing CRD definitions.
 		crdFiles := make(map[string]bool)
 
-		// List of Go files containing annotation definitions.
-		annotationFiles := []string{}
-
 		log.Printf("INFO - repo %s (%s)", sourceRepo.ShortName, sourceRepo.URL)
 		clonePath := repoFolder + "/" + sourceRepo.Organization + "/" + sourceRepo.ShortName
 		// Clone the repositories containing CRDs
@@ -124,19 +105,6 @@ func generateCrdDocs(configFilePath string) error {
 			sourceRepo.ShortName,
 			sourceRepo.CommitReference,
 			clonePath)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		// Collect annotation info
-		thisAnnotationsFolder := clonePath + "/" + annotationsFolder
-		log.Printf("INFO - repo %s - collecting annotations in %s", sourceRepo.ShortName, thisAnnotationsFolder)
-		err = filepath.Walk(thisAnnotationsFolder, func(path string, info os.FileInfo, err error) error {
-			if strings.HasSuffix(path, ".go") {
-				annotationFiles = append(annotationFiles, path)
-			}
-			return nil
-		})
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -166,40 +134,12 @@ func generateCrdDocs(configFilePath string) error {
 		}
 
 		// Process annotation details
-		var annotations []output.CRDAnnotationSupport
-		for _, annotationFile := range annotationFiles {
-			fset := token.NewFileSet()
-			files := []*ast.File{
-				mustParse(fset, annotationFile),
-			}
-			p, err := doc.NewFromFiles(fset, files, "github.com/giantswarm/extract-go-doc/p")
-			if err != nil {
-				panic(err)
-			}
-			for _, constant := range p.Consts {
-				annotation := Annotation{}
-
-				err := yaml.Unmarshal([]byte(constant.Doc), &annotation)
-				if err != nil {
-					log.Printf("%s - %s - annotation YAML docs missing", annotationFile, constant.Names[0])
-				}
-
-				if annotation.Documentation != "" {
-					for _, crdAPI := range annotation.Support {
-
-						rawAnnotation := constant.Decl.Specs[0].(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
-						annotationValue := strings.Replace(rawAnnotation, "\"", "", -1)
-
-						annotations = append(annotations, output.CRDAnnotationSupport{
-							Annotation:    annotationValue,
-							APIVersion:    crdAPI.APIVersion,
-							CRDName:       crdAPI.CRD,
-							Release:       crdAPI.Release,
-							Documentation: annotation.Documentation,
-						})
-					}
-				}
-			}
+		// Collect annotation info
+		thisAnnotationsFolder := clonePath + "/" + annotationsFolder
+		log.Printf("INFO - repo %s - collecting annotations in %s", sourceRepo.ShortName, thisAnnotationsFolder)
+		repoAnnotations, err := annotations.Collect(thisAnnotationsFolder)
+		if err != nil {
+			log.Printf("ERROR - repo %s - collecting annotations yielded error %#v", sourceRepo.ShortName, err)
 		}
 
 		for crdFile := range crdFiles {
@@ -249,9 +189,11 @@ func generateCrdDocs(configFilePath string) error {
 
 				templatePath := path.Dir(configFilePath) + "/" + configuration.TemplatePath
 
+				crdAnnotations := annotations.FilterForCRD(repoAnnotations, crds[i].Name, "")
+
 				_, err = output.WritePage(
 					crds[i],
-					annotations,
+					crdAnnotations,
 					meta,
 					exampleCRs,
 					outputFolderPath,
@@ -286,16 +228,4 @@ func printStackTrace(err error) {
 	for _, entry := range stackedError.Stack {
 		log.Printf("%s:%d", entry.File, entry.Line)
 	}
-}
-
-func mustParse(fset *token.FileSet, filename string) *ast.File {
-	src, err := ioutil.ReadFile(filename)
-	if err != nil {
-		panic(err)
-	}
-	f, err := parser.ParseFile(fset, filename, src, parser.ParseComments)
-	if err != nil {
-		panic(err)
-	}
-	return f
 }

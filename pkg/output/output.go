@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
-	"sort"
 	"strings"
 
 	"github.com/Masterminds/sprig/v3"
@@ -13,18 +12,10 @@ import (
 	blackfriday "github.com/russross/blackfriday/v2"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 
+	"github.com/giantswarm/crd-docs-generator/pkg/annotations"
 	"github.com/giantswarm/crd-docs-generator/pkg/config"
 	"github.com/giantswarm/crd-docs-generator/pkg/jsonschema"
 )
-
-// CRDAnnotationSupport represents the release and
-type CRDAnnotationSupport struct {
-	Annotation    string
-	APIVersion    string
-	CRDName       string
-	Release       string
-	Documentation string
-}
 
 // PageData is all the data we pass to the HTML template for the CRD detail page.
 type PageData struct {
@@ -51,12 +42,12 @@ type SchemaVersion struct {
 	Properties []jsonschema.Property
 	// YAML string showing an example CR.
 	ExampleCR   string
-	Annotations []CRDAnnotationSupport
+	Annotations []annotations.CRDAnnotationSupport
 }
 
 // WritePage creates a CRD schema documentation Markdown page.
 func WritePage(crd apiextensionsv1.CustomResourceDefinition,
-	annotations []CRDAnnotationSupport,
+	crdAnnotations []annotations.CRDAnnotationSupport,
 	md config.CRDItem,
 	examplesCRs map[string]string,
 	outputFolder,
@@ -98,7 +89,7 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	// Iterate schema versions
 	for _, version := range crd.Spec.Versions {
 		if !version.Served && !version.Storage {
-			// Neither stored nore served means that this version
+			// Neither stored nor served means that this version
 			// can be skipped.
 			continue
 		}
@@ -118,7 +109,7 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 		data.VersionSchemas[version.Name] = SchemaVersion{
 			Version:     version.Name,
 			Properties:  properties,
-			Annotations: sortAnnotations(filterAnnotations(annotations, crd.GetObjectMeta().GetName(), version.Name)),
+			Annotations: annotations.FilterForCRD(crdAnnotations, crd.Name, version.Name),
 		}
 
 		data.Versions = append(data.Versions, version.Name)
@@ -152,26 +143,6 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	}
 
 	return outputFile, nil
-}
-
-func filterAnnotations(annotations []CRDAnnotationSupport, CRDName string, APIVersion string) []CRDAnnotationSupport {
-	var result []CRDAnnotationSupport
-
-	for _, annotation := range annotations {
-		if annotation.CRDName == CRDName && annotation.APIVersion == APIVersion {
-			result = append(result, annotation)
-		}
-	}
-
-	return result
-}
-
-func sortAnnotations(annotations []CRDAnnotationSupport) []CRDAnnotationSupport {
-	sort.Slice(annotations, func(i, j int) bool {
-		return annotations[i].Annotation < annotations[j].Annotation
-	})
-
-	return annotations
 }
 
 func toMarkdown(input string) template.HTML {
