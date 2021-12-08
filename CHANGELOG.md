@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Breaking: rename `.APIVersion` template field to `.CRDVersion`.
 - Support multiple source repositories
 - Update jwt-go dependency
 - Refactoring to enable better testing
