@@ -58,7 +58,7 @@ type SchemaVersion struct {
 func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	annotations []CRDAnnotationSupport,
 	md config.CRDItem,
-	crFolder,
+	examplesCRs map[string]string,
 	outputFolder,
 	repoURL,
 	repoRef,
@@ -124,15 +124,12 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 		data.Versions = append(data.Versions, version.Name)
 	}
 
-	// Try to read example CRs for all versions.
+	// Add example CRs
 	for _, version := range data.Versions {
-		crFileName := fmt.Sprintf("%s/%s_%s_%s.yaml", crFolder, crd.Spec.Group, version, crd.Spec.Names.Singular)
-		exampleCR, err := ioutil.ReadFile(crFileName)
-		if err != nil {
-			fmt.Printf("%s - CR example is missing\n", crd.Name)
-		} else {
+		exampleCR, ok := examplesCRs[version]
+		if ok {
 			outputSchema := data.VersionSchemas[version]
-			outputSchema.ExampleCR = string(exampleCR)
+			outputSchema.ExampleCR = exampleCR + "\n"
 			data.VersionSchemas[version] = outputSchema
 		}
 	}

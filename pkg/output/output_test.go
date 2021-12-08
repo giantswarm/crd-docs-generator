@@ -28,7 +28,7 @@ func TestWritePage(t *testing.T) {
 		crd          apiextensionsv1.CustomResourceDefinition
 		annotations  []CRDAnnotationSupport
 		md           config.CRDItem
-		crFolder     string
+		examples     map[string]string
 		repoURL      string
 		repoRef      string
 		templatePath string
@@ -99,7 +99,9 @@ func TestWritePage(t *testing.T) {
 						},
 					},
 				},
-				crFolder:     "testdata",
+				examples: map[string]string{
+					"v1alpha1": "This is an example CR",
+				},
 				repoURL:      "https://github.com/giantswarm/my-repo",
 				repoRef:      "main",
 				templatePath: "testdata/crd.template",
@@ -116,7 +118,7 @@ func TestWritePage(t *testing.T) {
 			}
 			defer os.RemoveAll(tempDir)
 
-			resultPath, err := WritePage(tt.args.crd, tt.args.annotations, tt.args.md, tt.args.crFolder, tempDir, tt.args.repoURL, tt.args.repoRef, tt.args.templatePath)
+			resultPath, err := WritePage(tt.args.crd, tt.args.annotations, tt.args.md, tt.args.examples, tempDir, tt.args.repoURL, tt.args.repoRef, tt.args.templatePath)
 			if err != tt.wantErr {
 				t.Errorf("WritePage() error = %v, wantErr %v", err, tt.wantErr)
 				t.Logf("%s", microerror.Pretty(err, true))
