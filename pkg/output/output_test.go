@@ -11,6 +11,7 @@ import (
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/giantswarm/crd-docs-generator/pkg/annotations"
 	"github.com/giantswarm/crd-docs-generator/pkg/config"
 )
 
@@ -26,7 +27,7 @@ func TestMain(m *testing.M) {
 func TestWritePage(t *testing.T) {
 	type args struct {
 		crd          apiextensionsv1.CustomResourceDefinition
-		annotations  []CRDAnnotationSupport
+		annotations  []annotations.CRDAnnotationSupport
 		md           config.CRDItem
 		examples     map[string]string
 		repoURL      string
@@ -85,6 +86,15 @@ func TestWritePage(t *testing.T) {
 								},
 							},
 						},
+					},
+				},
+				annotations: []annotations.CRDAnnotationSupport{
+					{
+						Annotation:    "alpha.giantswarm.io/foo",
+						CRDName:       "demos.demo.giantswarm.io",
+						CRDVersion:    "v1alpha1",
+						Release:       "Since v16.0.0",
+						Documentation: "Here is some annotation documentation.",
 					},
 				},
 				md: config.CRDItem{
