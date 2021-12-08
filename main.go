@@ -8,6 +8,7 @@ import (
 	"go/parser"
 	"go/token"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -102,14 +103,22 @@ func generateCrdDocs(configFilePath string) error {
 		return microerror.Mask(err)
 	}
 
-	crdFiles := []string{}
-	annotationFiles := []string{}
+	// Full names of CRDs found
+	crdNames := make(map[string]bool)
 
-	// TODO: Loop over configured repositories
+	// Loop over configured repositories
 	defer os.RemoveAll(repoFolder)
 	for _, sourceRepo := range configuration.SourceRepositories {
+		// List of source YAML files containing CRD definitions.
+		crdFiles := make(map[string]bool)
+
+		// List of Go files containing annotation definitions.
+		annotationFiles := []string{}
+
+		log.Printf("INFO - repo %s (%s)", sourceRepo.ShortName, sourceRepo.URL)
 		clonePath := repoFolder + "/" + sourceRepo.Organization + "/" + sourceRepo.ShortName
 		// Clone the repositories containing CRDs
+		log.Printf("INFO - repo %s - cloning repository", sourceRepo.ShortName)
 		err = git.CloneRepositoryShallow(
 			sourceRepo.Organization,
 			sourceRepo.ShortName,
@@ -134,7 +143,7 @@ func generateCrdDocs(configFilePath string) error {
 		thisCRDFolder := clonePath + "/" + crdFolder
 		err = filepath.Walk(thisCRDFolder, func(path string, info os.FileInfo, err error) error {
 			if strings.HasSuffix(path, ".yaml") {
-				crdFiles = append(crdFiles, path)
+				crdFiles[path] = true
 			}
 			return nil
 		})
@@ -146,7 +155,7 @@ func generateCrdDocs(configFilePath string) error {
 		thisUpstreamCRDFolder := clonePath + "/" + upstreamCRDFolder
 		err = filepath.Walk(thisUpstreamCRDFolder, func(path string, info os.FileInfo, err error) error {
 			if strings.HasSuffix(path, upstreamFileName) {
-				crdFiles = append(crdFiles, path)
+				crdFiles[path] = true
 			}
 			return nil
 		})
@@ -170,7 +179,7 @@ func generateCrdDocs(configFilePath string) error {
 
 				err := yaml.Unmarshal([]byte(constant.Doc), &annotation)
 				if err != nil {
-					fmt.Printf("%s - %s - annotation YAML docs missing\n", annotationFile, constant.Names[0])
+					log.Printf("%s - %s - annotation YAML docs missing", annotationFile, constant.Names[0])
 				}
 
 				if annotation.Documentation != "" {
@@ -191,27 +200,36 @@ func generateCrdDocs(configFilePath string) error {
 			}
 		}
 
-		for _, crdFile := range crdFiles {
+		for crdFile := range crdFiles {
+			log.Printf("INFO - repo %s - reading CRDs from file %s", sourceRepo.ShortName, crdFile)
+
 			crds, err := crd.Read(crdFile)
 			if err != nil {
-				fmt.Printf("Something went wrong in crd.Read: %#v\n", err)
+				log.Printf("WARN - something went wrong in crd.Read for file %s: %#v", crdFile, err)
 			}
 
 			for i := range crds {
+				versions := []string{}
+				for _, v := range crds[i].Spec.Versions {
+					versions = append(versions, v.Name)
+				}
+				log.Printf("INFO - repo %s - processing CRD %s with versions %s", sourceRepo.ShortName, crds[i].Name, versions)
+
 				_, exists := crdNames[crds[i].Name]
 				if exists {
 					log.Printf("WARN - repo %s - provides CRD %s which is already added - skipping", sourceRepo.ShortName, crds[i].Name)
 					continue
 				}
 				crdNames[crds[i].Name] = true
+
 				// Skip hidden CRDs and CRDs with missing metadata
 				meta, ok := sourceRepo.Metadata[crds[i].Name]
 				if !ok {
-					fmt.Printf("%s - metadata is missing, skipping\n", crds[i].Name)
+					log.Printf("WARN - repo %s - skipping %s as no metadata found", sourceRepo.ShortName, crds[i].Name)
 					continue
 				}
 				if meta.Hidden {
-					fmt.Printf("%s - is hidden explicitly, skipping\n", crds[i].Name)
+					log.Printf("INFO - repo %s - skipping %s as hidden by configuration", sourceRepo.ShortName, crds[i].Name)
 					continue
 				}
 
@@ -227,7 +245,7 @@ func generateCrdDocs(configFilePath string) error {
 					sourceRepo.CommitReference,
 					templatePath)
 				if err != nil {
-					fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
+					log.Printf("WARN - repo %s - something went wrong in WriteCRDDocs: %#v", sourceRepo.ShortName, err)
 				}
 			}
 		}
@@ -242,9 +260,9 @@ func printStackTrace(err error) {
 	jsonErr := json.Unmarshal([]byte(microerror.JSON(err)), &stackedError)
 	if jsonErr != nil {
 		fmt.Println("Error when trying to Unmarshal JSON error:")
-		fmt.Printf("%#v\n", jsonErr)
+		log.Printf("%#v", jsonErr)
 		fmt.Println("\nOriginal error:")
-		fmt.Printf("%#v\n", err)
+		log.Printf("%#v", err)
 	}
 
 	for i, j := 0, len(stackedError.Stack)-1; i < j; i, j = i+1, j-1 {
@@ -252,7 +270,7 @@ func printStackTrace(err error) {
 	}
 
 	for _, entry := range stackedError.Stack {
-		fmt.Printf("%s:%d\n", entry.File, entry.Line)
+		log.Printf("%s:%d", entry.File, entry.Line)
 	}
 }
 

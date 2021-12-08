@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"os"
 	"sort"
 	"strings"
@@ -129,7 +130,7 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 		crFileName := fmt.Sprintf("%s/%s_%s_%s.yaml", crFolder, crd.Spec.Group, version, crd.Spec.Names.Singular)
 		exampleCR, err := ioutil.ReadFile(crFileName)
 		if err != nil {
-			fmt.Printf("%s - CR example is missing\n", crd.Name)
+			log.Printf("WARN - repo %s - CR example is missing for %s version %s", repoURL, crd.Name, version)
 		} else {
 			outputSchema := data.VersionSchemas[version]
 			outputSchema.ExampleCR = string(exampleCR)
