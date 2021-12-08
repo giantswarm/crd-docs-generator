@@ -7,11 +7,15 @@
 
 template_path: templates/crd.template
 
+# List of repositories containing CRDs.
+# Sequence is important here if several repos provide the same CRD (based on the full name).
+# In this case, the first repo "wins". Subsequent repos adding the same CRD will result in a
+# warning.
 source_repositories:
-  - url: https://github.com/giantswarm/apiextensions
+  - url: https://github.com/giantswarm/apiextensions-application
     organization: giantswarm
-    short_name: apiextensions
-    commit_reference: v3.39.0
+    short_name: apiextensions-application
+    commit_reference: v0.1.0
     metadata:
       appcatalogs.application.giantswarm.io:
         owner:
@@ -32,6 +36,21 @@ source_repositories:
           - https://github.com/orgs/giantswarm/teams/team-honeybadger
         topics:
           - apps
+      catalogs.application.giantswarm.io:
+        owner:
+          - https://github.com/orgs/giantswarm/teams/team-honeybadger
+        topics:
+          - apps
+      charts.application.giantswarm.io:
+        owner:
+          - https://github.com/orgs/giantswarm/teams/team-honeybadger
+        topics:
+          - apps
+  - url: https://github.com/giantswarm/apiextensions
+    organization: giantswarm
+    short_name: apiextensions
+    commit_reference: v3.39.0
+    metadata:
       awsclusters.infrastructure.cluster.x-k8s.io:
         owner:
           - https://github.com/orgs/giantswarm/teams/team-phoenix
@@ -174,22 +193,12 @@ source_repositories:
         owner:
           - https://github.com/orgs/giantswarm/teams/team-phoenix
         hidden: true
-      catalogs.application.giantswarm.io:
-        owner:
-          - https://github.com/orgs/giantswarm/teams/team-honeybadger
-        topics:
-          - apps
       certconfigs.core.giantswarm.io:
         owner:
           - https://github.com/orgs/giantswarm/teams/team-cabbage
         topics:
           - managementcluster
           - workloadcluster
-      charts.application.giantswarm.io:
-        owner:
-          - https://github.com/orgs/giantswarm/teams/team-honeybadger
-        topics:
-          - apps
       chartconfigs.core.giantswarm.io:
         hidden: true
       clusterclasses.cluster.x-k8s.io:
