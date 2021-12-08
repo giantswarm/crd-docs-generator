@@ -236,10 +236,10 @@ func generateCrdDocs(configFilePath string) error {
 				// Get example CRs for this CRD (using version as key)
 				exampleCRs := make(map[string]string)
 				for _, version := range versions {
-					crFileName := fmt.Sprintf("%s/%s_%s_%s.yaml", crFolder, crds[i].Spec.Group, version, crds[i].Spec.Names.Singular)
+					crFileName := fmt.Sprintf("%s/%s/%s_%s_%s.yaml", clonePath, crFolder, crds[i].Spec.Group, version, crds[i].Spec.Names.Singular)
 					exampleCR, err := ioutil.ReadFile(crFileName)
 					if err != nil {
-						log.Printf("WARN - repo %s - CR example is missing for %s version %s", sourceRepo.ShortName, crds[i].Name, version)
+						log.Printf("WARN - repo %s - CR example is missing for %s version %s in path %s", sourceRepo.ShortName, crds[i].Name, version, crFileName)
 					} else {
 						exampleCRs[version] = strings.TrimSpace(string(exampleCR))
 					}
