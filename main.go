@@ -21,7 +21,6 @@ import (
 	"github.com/giantswarm/crd-docs-generator/pkg/config"
 	"github.com/giantswarm/crd-docs-generator/pkg/crd"
 	"github.com/giantswarm/crd-docs-generator/pkg/git"
-	"github.com/giantswarm/crd-docs-generator/pkg/metadata"
 	"github.com/giantswarm/crd-docs-generator/pkg/output"
 )
 
@@ -36,9 +35,6 @@ type CRDDocsGenerator struct {
 
 	// Path to the config file
 	configFilePath string
-
-	// git reference (tag, commit SHA, branch name) to check out for the source repository
-	sourceCommitRef string
 }
 
 // Types to read annoatations documentation and CRD support
@@ -57,15 +53,17 @@ const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
 
-	// Source folder for Giant Swarm CRDs in YAML format in the apiextensions repo.
-	crdFolder = repoFolder + "/config/crd"
+	// Within a git clone, relative path for Giant Swarm CRDs in YAML format.
+	crdFolder = "config/crd"
 
-	// Source folder for upstream CRDs in YAML format in the apiextensions repo.
-	upstreamCRDFolder = repoFolder + "/helm"
+	// Within a git clone, relative path for upstream CRDs in YAML format.
+	upstreamCRDFolder = "helm"
 
+	// File name for bespoke upstream CRDs.
 	upstreamFileName = "upstream.yaml"
 
-	crFolder = repoFolder + "/docs/cr"
+	// Within a git clone, relative path for example CRs in YAML format.
+	crFolder = "docs/cr"
 
 	annotationsFolder = repoFolder + "/pkg/annotation"
 
@@ -83,13 +81,11 @@ func main() {
 			Short:        "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
 			SilenceUsage: true,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return generateCrdDocs(crdDocsGenerator.configFilePath,
-					crdDocsGenerator.sourceCommitRef)
+				return generateCrdDocs(crdDocsGenerator.configFilePath)
 			},
 		}
 
 		c.PersistentFlags().StringVar(&crdDocsGenerator.configFilePath, "config", "./config.yaml", "Path to the configuration file.")
-		c.PersistentFlags().StringVar(&crdDocsGenerator.sourceCommitRef, "commit-reference", "main", "Commit SHA, tag or branch name to use of the CRD source repository.")
 		crdDocsGenerator.rootCommand = c
 	}
 
@@ -100,7 +96,7 @@ func main() {
 }
 
 // generateCrdDocs is the function called from our main CLI command.
-func generateCrdDocs(configFilePath, commitRef string) error {
+func generateCrdDocs(configFilePath string) error {
 	configuration, err := config.Read(configFilePath)
 	if err != nil {
 		return microerror.Mask(err)
@@ -109,125 +105,124 @@ func generateCrdDocs(configFilePath, commitRef string) error {
 	crdFiles := []string{}
 	annotationFiles := []string{}
 
-	// Clone the repository containing CRDs
-	err = git.CloneRepositoryShallow(
-		configuration.SourceRepository.Organization,
-		configuration.SourceRepository.ShortName,
-		commitRef,
-		repoFolder)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
+	// TODO: Loop over configured repositories
 	defer os.RemoveAll(repoFolder)
-
-	// Read docs config/metadata
-	md, err := metadata.Read(repoFolder + "/" + configuration.SourceRepository.MetadataPath)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	// Collect annotation info
-	err = filepath.Walk(annotationsFolder, func(path string, info os.FileInfo, err error) error {
-		if strings.HasSuffix(path, ".go") {
-			annotationFiles = append(annotationFiles, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	// Collect our own CRD YAML files
-	err = filepath.Walk(crdFolder, func(path string, info os.FileInfo, err error) error {
-		if strings.HasSuffix(path, ".yaml") {
-			crdFiles = append(crdFiles, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	// Collect upstream CRD YAML files
-	err = filepath.Walk(upstreamCRDFolder, func(path string, info os.FileInfo, err error) error {
-		if strings.HasSuffix(path, upstreamFileName) {
-			crdFiles = append(crdFiles, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	// Process annotation details
-	var annotations []output.CRDAnnotationSupport
-	for _, annotationFile := range annotationFiles {
-		fset := token.NewFileSet()
-		files := []*ast.File{
-			mustParse(fset, annotationFile),
-		}
-		p, err := doc.NewFromFiles(fset, files, "github.com/giantswarm/extract-go-doc/p")
+	for _, sourceRepo := range configuration.SourceRepositories {
+		clonePath := repoFolder + "/" + sourceRepo.Organization + "/" + sourceRepo.ShortName
+		// Clone the repositories containing CRDs
+		err = git.CloneRepositoryShallow(
+			sourceRepo.Organization,
+			sourceRepo.ShortName,
+			sourceRepo.CommitReference,
+			clonePath)
 		if err != nil {
-			panic(err)
+			return microerror.Mask(err)
 		}
-		for _, constant := range p.Consts {
-			annotation := Annotation{}
 
-			err := yaml.Unmarshal([]byte(constant.Doc), &annotation)
-			if err != nil {
-				fmt.Printf("%s - %s - annotation YAML docs missing\n", annotationFile, constant.Names[0])
+		// Collect annotation info
+		err = filepath.Walk(annotationsFolder, func(path string, info os.FileInfo, err error) error {
+			if strings.HasSuffix(path, ".go") {
+				annotationFiles = append(annotationFiles, path)
 			}
+			return nil
+		})
+		if err != nil {
+			return microerror.Mask(err)
+		}
 
-			if annotation.Documentation != "" {
-				for _, crdAPI := range annotation.Support {
+		// Collect our own CRD YAML files
+		thisCRDFolder := clonePath + "/" + crdFolder
+		err = filepath.Walk(thisCRDFolder, func(path string, info os.FileInfo, err error) error {
+			if strings.HasSuffix(path, ".yaml") {
+				crdFiles = append(crdFiles, path)
+			}
+			return nil
+		})
+		if err != nil {
+			return microerror.Mask(err)
+		}
 
-					rawAnnotation := constant.Decl.Specs[0].(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
-					annotationValue := strings.Replace(rawAnnotation, "\"", "", -1)
+		// Collect upstream CRD YAML files
+		thisUpstreamCRDFolder := clonePath + "/" + upstreamCRDFolder
+		err = filepath.Walk(thisUpstreamCRDFolder, func(path string, info os.FileInfo, err error) error {
+			if strings.HasSuffix(path, upstreamFileName) {
+				crdFiles = append(crdFiles, path)
+			}
+			return nil
+		})
+		if err != nil {
+			return microerror.Mask(err)
+		}
 
-					annotations = append(annotations, output.CRDAnnotationSupport{
-						Annotation:    annotationValue,
-						APIVersion:    crdAPI.APIVersion,
-						CRDName:       crdAPI.CRD,
-						Release:       crdAPI.Release,
-						Documentation: annotation.Documentation,
-					})
+		// Process annotation details
+		var annotations []output.CRDAnnotationSupport
+		for _, annotationFile := range annotationFiles {
+			fset := token.NewFileSet()
+			files := []*ast.File{
+				mustParse(fset, annotationFile),
+			}
+			p, err := doc.NewFromFiles(fset, files, "github.com/giantswarm/extract-go-doc/p")
+			if err != nil {
+				panic(err)
+			}
+			for _, constant := range p.Consts {
+				annotation := Annotation{}
+
+				err := yaml.Unmarshal([]byte(constant.Doc), &annotation)
+				if err != nil {
+					fmt.Printf("%s - %s - annotation YAML docs missing\n", annotationFile, constant.Names[0])
+				}
+
+				if annotation.Documentation != "" {
+					for _, crdAPI := range annotation.Support {
+
+						rawAnnotation := constant.Decl.Specs[0].(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
+						annotationValue := strings.Replace(rawAnnotation, "\"", "", -1)
+
+						annotations = append(annotations, output.CRDAnnotationSupport{
+							Annotation:    annotationValue,
+							APIVersion:    crdAPI.APIVersion,
+							CRDName:       crdAPI.CRD,
+							Release:       crdAPI.Release,
+							Documentation: annotation.Documentation,
+						})
+					}
 				}
 			}
 		}
-	}
 
-	for _, crdFile := range crdFiles {
-		crds, err := crd.Read(crdFile)
-		if err != nil {
-			fmt.Printf("Something went wrong in crd.Read: %#v\n", err)
-		}
-
-		for i := range crds {
-			// Skip hidden CRDs and CRDs with missing metadata
-			meta, ok := md.CRDs[crds[i].Name]
-			if !ok {
-				fmt.Printf("%s - metadata is missing, skipping\n", crds[i].Name)
-				continue
-			}
-			if meta.Hidden {
-				fmt.Printf("%s - is hidden explicitly, skipping\n", crds[i].Name)
-				continue
-			}
-
-			templatePath := path.Dir(configFilePath) + "/" + configuration.TemplatePath
-
-			_, err = output.WritePage(
-				crds[i],
-				annotations,
-				meta,
-				crFolder,
-				outputFolderPath,
-				configuration.SourceRepository.URL,
-				commitRef,
-				templatePath)
+		for _, crdFile := range crdFiles {
+			crds, err := crd.Read(crdFile)
 			if err != nil {
-				fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
+				fmt.Printf("Something went wrong in crd.Read: %#v\n", err)
+			}
+
+			for i := range crds {
+				// Skip hidden CRDs and CRDs with missing metadata
+				meta, ok := sourceRepo.Metadata[crds[i].Name]
+				if !ok {
+					fmt.Printf("%s - metadata is missing, skipping\n", crds[i].Name)
+					continue
+				}
+				if meta.Hidden {
+					fmt.Printf("%s - is hidden explicitly, skipping\n", crds[i].Name)
+					continue
+				}
+
+				templatePath := path.Dir(configFilePath) + "/" + configuration.TemplatePath
+
+				_, err = output.WritePage(
+					crds[i],
+					annotations,
+					meta,
+					crFolder,
+					outputFolderPath,
+					sourceRepo.URL,
+					sourceRepo.CommitReference,
+					templatePath)
+				if err != nil {
+					fmt.Printf("Something went wrong in WriteCRDDocs: %#v\n", err)
+				}
 			}
 		}
 	}

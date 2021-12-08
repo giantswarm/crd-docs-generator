@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Support multiple source repositories
 - Update jwt-go dependency
 - Refactoring to enable better testing
 - Add test for output package

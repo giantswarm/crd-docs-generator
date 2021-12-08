@@ -21,11 +21,42 @@ func TestRead(t *testing.T) {
 				path: "testdata/config1.yaml",
 			},
 			want: &FromFile{
-				SourceRepository: &FromFileSourceRepository{
-					URL:          "https://github.com/giantswarm/apiextensions",
-					Organization: "giantswarm",
-					ShortName:    "apiextensions",
-					MetadataPath: "my/path.yaml",
+				SourceRepositories: []SourceRepository{
+					{
+						URL:          "https://github.com/giantswarm/apiextensions",
+						Organization: "giantswarm",
+						ShortName:    "apiextensions",
+						Metadata: map[string]CRDItem{
+							"crd.with.full.info": {
+								Owners:    []string{"owner"},
+								Topics:    []string{"apps"},
+								Providers: []string{"aws", "azure"},
+								Hidden:    false,
+							},
+							"unpublished.crd": {
+								Hidden: true,
+							},
+							"only.defaults": {
+								Hidden: false,
+							},
+							"deprecated.crd": {
+								Hidden: false,
+								Deprecation: &Deprecation{
+									ReplacedBy: &DeprecationReplacedBy{
+										FullName:  "new.full.crd.name",
+										ShortName: "New",
+									},
+								},
+							},
+							"simply.deprecated.crd": {
+								Hidden: false,
+								Deprecation: &Deprecation{
+									Info: "This CRD is deprecated",
+								},
+							},
+						},
+						CommitReference: "v3.39.0",
+					},
 				},
 				TemplatePath: "my/file",
 			},

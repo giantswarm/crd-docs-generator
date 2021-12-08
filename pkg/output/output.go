@@ -13,8 +13,8 @@ import (
 	blackfriday "github.com/russross/blackfriday/v2"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 
+	"github.com/giantswarm/crd-docs-generator/pkg/config"
 	"github.com/giantswarm/crd-docs-generator/pkg/jsonschema"
-	"github.com/giantswarm/crd-docs-generator/pkg/metadata"
 )
 
 // CRDAnnotationSupport represents the release and
@@ -29,7 +29,7 @@ type CRDAnnotationSupport struct {
 // PageData is all the data we pass to the HTML template for the CRD detail page.
 type PageData struct {
 	Description         string
-	Metadata            metadata.CRDItem
+	Metadata            config.CRDItem
 	Group               string
 	NamePlural          string
 	NameSingular        string
@@ -57,7 +57,7 @@ type SchemaVersion struct {
 // WritePage creates a CRD schema documentation Markdown page.
 func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	annotations []CRDAnnotationSupport,
-	md metadata.CRDItem,
+	md config.CRDItem,
 	crFolder,
 	outputFolder,
 	repoURL,

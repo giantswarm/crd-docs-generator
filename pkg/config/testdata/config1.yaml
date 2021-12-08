@@ -1,6 +1,28 @@
-source_repository:
-  url: https://github.com/giantswarm/apiextensions
-  organization: giantswarm
-  short_name: apiextensions
-  metadata_path: my/path.yaml
 template_path: my/file
+
+source_repositories:
+  - url: https://github.com/giantswarm/apiextensions
+    organization: giantswarm
+    short_name: apiextensions
+    commit_reference: v3.39.0
+    metadata:
+      crd.with.full.info:
+        owner:
+          - owner
+        topics:
+          - apps
+        provider:
+          - aws
+          - azure
+        hidden: false
+      unpublished.crd:
+        hidden: true
+      only.defaults:
+      deprecated.crd:
+        deprecation:
+          replaced_by:
+            full_name:  new.full.crd.name
+            short_name: New
+      simply.deprecated.crd:
+        deprecation:
+          info: This CRD is deprecated
