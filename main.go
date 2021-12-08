@@ -198,6 +198,12 @@ func generateCrdDocs(configFilePath string) error {
 			}
 
 			for i := range crds {
+				_, exists := crdNames[crds[i].Name]
+				if exists {
+					log.Printf("WARN - repo %s - provides CRD %s which is already added - skipping", sourceRepo.ShortName, crds[i].Name)
+					continue
+				}
+				crdNames[crds[i].Name] = true
 				// Skip hidden CRDs and CRDs with missing metadata
 				meta, ok := sourceRepo.Metadata[crds[i].Name]
 				if !ok {
