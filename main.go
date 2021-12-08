@@ -66,7 +66,7 @@ const (
 	// Within a git clone, relative path for example CRs in YAML format.
 	crFolder = "docs/cr"
 
-	annotationsFolder = repoFolder + "/pkg/annotation"
+	annotationsFolder = "/pkg/annotation"
 
 	// Path for Markdown output.
 	outputFolderPath = "./output"
@@ -129,7 +129,9 @@ func generateCrdDocs(configFilePath string) error {
 		}
 
 		// Collect annotation info
-		err = filepath.Walk(annotationsFolder, func(path string, info os.FileInfo, err error) error {
+		thisAnnotationsFolder := clonePath + "/" + annotationsFolder
+		log.Printf("INFO - repo %s - collecting annotations in %s", sourceRepo.ShortName, thisAnnotationsFolder)
+		err = filepath.Walk(thisAnnotationsFolder, func(path string, info os.FileInfo, err error) error {
 			if strings.HasSuffix(path, ".go") {
 				annotationFiles = append(annotationFiles, path)
 			}
