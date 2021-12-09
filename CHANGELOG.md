@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2021-12-09
+
 - Breaking: rename `.APIVersion` template field to `.CRDVersion`.
 - Support multiple source repositories
 - Update jwt-go dependency
@@ -79,7 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use config file for settings instead of flags
 - Switch CI from architect to architect-orb
 
-[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/giantswarm/crd-docs-generator/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/giantswarm/crd-docs-generator/compare/v0.6.0...v0.6.1
