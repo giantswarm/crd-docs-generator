@@ -5,7 +5,7 @@
 # docs.giantswarm.io, see
 # https://github.com/giantswarm/docs/blob/main/scripts/update-crd-reference/config.yaml
 
-template_path: templates/crd.template
+template_path: ./crd.template.docs
 
 # List of repositories containing CRDs.
 # Sequence is important here if several repos provide the same CRD (based on the full name).
@@ -46,6 +46,38 @@ source_repositories:
           - https://github.com/orgs/giantswarm/teams/team-honeybadger
         topics:
           - apps
+  - url: https://github.com/giantswarm/config-controller
+    organization: giantswarm
+    short_name: config-controller
+    commit_reference: v0.5.1
+    metadata:
+      configs.core.giantswarm.io:
+        owner:
+          - https://github.com/orgs/giantswarm/teams/team-honeybadger
+        topics:
+          - apps
+          - managementcluster
+  - url: https://github.com/giantswarm/silence-operator
+    organization: giantswarm
+    short_name: silence-operator
+    commit_reference: v0.4.0
+    metadata:
+      silences.monitoring.giantswarm.io:
+        owner:
+          - https://github.com/orgs/giantswarm/teams/team-atlas
+        topics:
+          - managementcluster
+  - url: https://github.com/giantswarm/release-operator
+    organization: giantswarm
+    short_name: release-operator
+    commit_reference: v3.0.0
+    metadata:
+      releases.release.giantswarm.io:
+        owner:
+          - https://github.com/orgs/giantswarm/teams/team-honeybadger
+        topics:
+          - managementcluster
+          - workloadcluster
   - url: https://github.com/giantswarm/apiextensions
     organization: giantswarm
     short_name: apiextensions
@@ -219,12 +251,6 @@ source_repositories:
           - vsphere
         topics:
           - workloadcluster
-      configs.core.giantswarm.io:
-        owner:
-          - https://github.com/orgs/giantswarm/teams/team-honeybadger
-        topics:
-          - apps
-          - managementcluster
       drainerconfigs.core.giantswarm.io:
         hidden: true
       draughtsmanconfigs.core.giantswarm.io:
@@ -351,17 +377,6 @@ source_repositories:
           - managementcluster
       releasecycles.release.giantswarm.io:
         hidden: true
-      releases.release.giantswarm.io:
-        owner:
-          - https://github.com/orgs/giantswarm/teams/team-honeybadger
-        topics:
-          - managementcluster
-          - workloadcluster
-      silences.monitoring.giantswarm.io:
-        owner:
-          - https://github.com/orgs/giantswarm/teams/team-atlas
-        topics:
-          - managementcluster
       sparks.core.giantswarm.io:
         owner:
           - https://github.com/orgs/giantswarm/teams/team-phoenix
