@@ -5,7 +5,7 @@
 # docs.giantswarm.io, see
 # https://github.com/giantswarm/docs/blob/main/scripts/update-crd-reference/config.yaml
 
-template_path: ./crd.template.docs
+template_path: templates/crd.template
 
 # List of repositories containing CRDs.
 # Sequence is important here if several repos provide the same CRD (based on the full name).
