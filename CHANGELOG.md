@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Support --gitCloneRootPath command line option for those repos that do not have config/crd, docs/cr, and helm at the root level.
+
 ## [0.8.0] - 2021-12-09
 
 - Breaking: rename `.APIVersion` template field to `.CRDVersion`.
