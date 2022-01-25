@@ -5,6 +5,8 @@ source_repositories:
     organization: giantswarm
     short_name: apiextensions
     commit_reference: v3.39.0
+    annotations_paths:
+      - pkg/annotations
     crd_paths:
       - config/crd
       - helm
