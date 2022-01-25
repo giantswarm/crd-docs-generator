@@ -5,6 +5,11 @@ source_repositories:
     organization: giantswarm
     short_name: apiextensions
     commit_reference: v3.39.0
+    crd_paths:
+      - config/crd
+      - helm
+    cr_paths:
+      - docs/cr
     metadata:
       crd.with.full.info:
         owner:

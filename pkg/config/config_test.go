@@ -26,6 +26,8 @@ func TestRead(t *testing.T) {
 						URL:          "https://github.com/giantswarm/apiextensions",
 						Organization: "giantswarm",
 						ShortName:    "apiextensions",
+						CRDPaths:     []string{"config/crd", "helm"},
+						CRPaths:      []string{"docs/cr"},
 						Metadata: map[string]CRDItem{
 							"crd.with.full.info": {
 								Owners:    []string{"owner"},
