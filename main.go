@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -37,20 +38,6 @@ type CRDDocsGenerator struct {
 const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
-
-	// Within a git clone, relative path for Giant Swarm CRDs in YAML format.
-	crdFolder = "config/crd"
-
-	// Within a git clone, relative path for upstream CRDs in YAML format.
-	upstreamCRDFolder = "helm"
-
-	// File name for bespoke upstream CRDs.
-	upstreamFileName = "upstream.yaml"
-
-	// Within a git clone, relative path for example CRs in YAML format.
-	crFolder = "docs/cr"
-
-	annotationsFolder = "/pkg/annotation"
 
 	// Path for Markdown output.
 	outputFolderPath = "./output"
@@ -109,37 +96,30 @@ func generateCrdDocs(configFilePath string) error {
 			return microerror.Mask(err)
 		}
 
-		// Collect our own CRD YAML files
-		thisCRDFolder := clonePath + "/" + crdFolder
-		err = filepath.Walk(thisCRDFolder, func(path string, info os.FileInfo, err error) error {
-			if strings.HasSuffix(path, ".yaml") {
-				crdFiles[path] = true
+		// Collect CRD YAML files
+		for _, crdPath := range sourceRepo.CRDPaths {
+			thisCRDFolder := clonePath + "/" + crdPath
+			err = filepath.Walk(thisCRDFolder, func(path string, info os.FileInfo, err error) error {
+				if strings.HasSuffix(path, ".yaml") {
+					crdFiles[path] = true
+				}
+				return nil
+			})
+			if err != nil {
+				return microerror.Mask(err)
 			}
-			return nil
-		})
-		if err != nil {
-			return microerror.Mask(err)
 		}
 
-		// Collect upstream CRD YAML files
-		thisUpstreamCRDFolder := clonePath + "/" + upstreamCRDFolder
-		err = filepath.Walk(thisUpstreamCRDFolder, func(path string, info os.FileInfo, err error) error {
-			if strings.HasSuffix(path, upstreamFileName) {
-				crdFiles[path] = true
-			}
-			return nil
-		})
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		// Process annotation details
 		// Collect annotation info
-		thisAnnotationsFolder := clonePath + "/" + annotationsFolder
-		log.Printf("INFO - repo %s - collecting annotations in %s", sourceRepo.ShortName, thisAnnotationsFolder)
-		repoAnnotations, err := annotations.Collect(thisAnnotationsFolder)
-		if err != nil {
-			log.Printf("ERROR - repo %s - collecting annotations yielded error %#v", sourceRepo.ShortName, err)
+		var repoAnnotations []annotations.CRDAnnotationSupport
+		for _, annotationsPath := range sourceRepo.AnnotationsPath {
+			thisAnnotationsFolder := clonePath + "/" + annotationsPath
+			log.Printf("INFO - repo %s - collecting annotations in %s", sourceRepo.ShortName, thisAnnotationsFolder)
+			a, err := annotations.Collect(thisAnnotationsFolder)
+			if err != nil {
+				log.Printf("ERROR - repo %s - collecting annotations in %s yielded error %#v", sourceRepo.ShortName, thisAnnotationsFolder, err)
+			}
+			repoAnnotations = append(repoAnnotations, a...)
 		}
 
 		for crdFile := range crdFiles {
@@ -175,15 +155,30 @@ func generateCrdDocs(configFilePath string) error {
 					continue
 				}
 
-				// Get example CRs for this CRD (using version as key)
+				// Get at most one example CR for each version of this CRD
 				exampleCRs := make(map[string]string)
 				for _, version := range versions {
-					crFileName := fmt.Sprintf("%s/%s/%s_%s_%s.yaml", clonePath, crFolder, crds[i].Spec.Group, version, crds[i].Spec.Names.Singular)
-					exampleCR, err := ioutil.ReadFile(crFileName)
-					if err != nil {
-						log.Printf("WARN - repo %s - CR example is missing for %s version %s in path %s", sourceRepo.ShortName, crds[i].Name, version, crFileName)
-					} else {
-						exampleCRs[version] = strings.TrimSpace(string(exampleCR))
+					found := false
+
+					for _, crPath := range sourceRepo.CRPaths {
+
+						crFilePath := fmt.Sprintf("%s/%s/%s_%s_%s.yaml", clonePath, crPath, crds[i].Spec.Group, version, crds[i].Spec.Names.Singular)
+						if _, err := os.Stat(crFilePath); errors.Is(err, os.ErrNotExist) {
+							continue
+						}
+
+						exampleCR, err := ioutil.ReadFile(crFilePath)
+						if err != nil {
+							log.Printf("ERROR - repo %s - example CR %s could not be read: %s", sourceRepo.ShortName, crFilePath, err)
+						} else {
+							found = true
+							exampleCRs[version] = strings.TrimSpace(string(exampleCR))
+							break
+						}
+					}
+
+					if !found {
+						log.Printf("WARN - repo %s - No example CR found for %s version %s ", sourceRepo.ShortName, crds[i].Name, version)
 					}
 				}
 
