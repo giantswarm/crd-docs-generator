@@ -21,6 +21,9 @@ type SourceRepository struct {
 	ShortName       string             `yaml:"short_name"`
 	Metadata        map[string]CRDItem `yaml:"metadata"`
 	CommitReference string             `yaml:"commit_reference"`
+	AnnotationsPath []string           `yaml:"annotations_paths"`
+	CRDPaths        []string           `yaml:"crd_paths"`
+	CRPaths         []string           `yaml:"cr_paths"`
 }
 
 type CRDItem struct {

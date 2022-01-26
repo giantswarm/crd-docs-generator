@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+Breaking: source paths are now configured in the config file.
+
+Three new configuration keys have been introduced to configure paths per source_repository:
+
+- `crd_paths`: paths to search for CRD YAML files.
+- `cr_paths`: paths to search for example CR YAML files.
+- `annotations_paths`: paths to search for Go files defining annotations.
+
+All expect array values. Paths are relative to the source repo root. See the `config.example.yaml` file to learn how to use the keys.
+
 ## [0.8.0] - 2021-12-09
 
 - Breaking: rename `.APIVersion` template field to `.CRDVersion`.

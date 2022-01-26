@@ -58,6 +58,18 @@ source_repository_ref: {{ .SourceRepositoryRef }}
 
 # {{ .Title }}
 
+{{- with .Metadata.Deprecation }}
+<p class="well disclaimer">
+<i class="fa fa-warning"></i> <b>Deprecation:</b>
+{{- with .Info }}
+{{ . }}
+{{- end }}
+{{- with .ReplacedBy }}
+This CRD is being replaced by <a href="../{{ .FullName }}/">{{ .ShortName }}</a>.
+{{- end }}
+</p>
+{{- end }}
+
 {{ with .Description }}
 <p class="crd-description">{{ . }}</p>
 {{ end -}}

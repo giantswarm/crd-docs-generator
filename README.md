@@ -13,16 +13,13 @@ The generated output consists of Markdown files packed with HTML. By itself, thi
 
 This tool relies on:
 
-- CRDs being defined in public source repositories
-  - ... as one YAML file per CRD in the [apiextensions `config/crd` folder](https://github.com/giantswarm/apiextensions/tree/master/config/crd) folder
-  - ... or in the [apiextensions `helm` folder](https://github.com/giantswarm/apiextensions/tree/master/helm) (deeper in the structure) as a file named `upstream.yaml`.
-- Each CRD, identified by its full name, occurs only once
+- CRDs being defined in public source repositories in YAML format.
 - CRDs providing an OpenAPIv3 validation schema
   - either in the `.spec.validation` section of a CRD containg only one version
   - or in the `.spec.versions[*].schema` position of a CRD containing multiple versions
 - OpenAPIv3 schemas containing `description` attributes for every property.
 - The topmost `description` value explaining the CRD itself. (For a CRD containing multiple versions, the first `description` found is used as such.)
-- CR examples to be found in the [apiextensions `docs/cr` folder](https://github.com/giantswarm/apiextensions/tree/master/docs/cr) as one example per YAML file.
+- CR examples to be found in the source repository/repositories as one example per YAML file.
 
 ## Usage
 
@@ -43,6 +40,8 @@ go run main.go --config config.example.yaml
 ```
 
 The volume mapping defines where the generated output will land.
+
+See the `config.example.yaml` file for an idea how to configure your source repositories.
 
 ## TODO
 
