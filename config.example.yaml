@@ -15,7 +15,7 @@ source_repositories:
   - url: https://github.com/giantswarm/apiextensions-application
     organization: giantswarm
     short_name: apiextensions-application
-    commit_reference: v0.1.0
+    commit_reference: v0.3.0
     crd_paths:
       - config/crd
     cr_paths:
@@ -82,7 +82,7 @@ source_repositories:
   - url: https://github.com/giantswarm/release-operator
     organization: giantswarm
     short_name: release-operator
-    commit_reference: v3.2.0
+    commit_reference: v3.0.1
     crd_paths:
       - config/crd
     cr_paths:
@@ -97,7 +97,7 @@ source_repositories:
   - url: https://github.com/giantswarm/apiextensions
     organization: giantswarm
     short_name: apiextensions
-    commit_reference: v3.40.0
+    commit_reference: v3.39.0
     annotations_paths:
       - pkg/annotation
     crd_paths:
