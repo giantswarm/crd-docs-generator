@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2022-01-26
+
 ### Changed
 
 Breaking: source paths are now configured in the config file.
@@ -93,7 +95,8 @@ All expect array values. Paths are relative to the source repo root. See the `co
 - Use config file for settings instead of flags
 - Switch CI from architect to architect-orb
 
-[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/giantswarm/giantswarm/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/giantswarm/giantswarm/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/giantswarm/crd-docs-generator/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.6.1...v0.7.0
