@@ -7,6 +7,8 @@
 
 template_path: templates/crd.template
 
+output_path: output
+
 # List of repositories containing CRDs.
 # Sequence is important here if several repos provide the same CRD (based on the full name).
 # In this case, the first repo "wins". Subsequent repos adding the same CRD will result in a
