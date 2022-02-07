@@ -2,6 +2,7 @@
 # where we merge versions from two CRDs.
 
 template_path: template.gotmpl
+output_path: testdata/case1/output
 source_repositories:
   - url: https://github.com/giantswarm/crd-docs-generator
     organization: giantswarm
