@@ -61,6 +61,7 @@ func TestRead(t *testing.T) {
 						CommitReference: "v3.39.0",
 					},
 				},
+				OutputPath:   "output",
 				TemplatePath: "my/file",
 			},
 			wantErr: false,

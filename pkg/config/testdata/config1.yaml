@@ -1,5 +1,7 @@
 template_path: my/file
 
+output_path: output
+
 source_repositories:
   - url: https://github.com/giantswarm/apiextensions
     organization: giantswarm

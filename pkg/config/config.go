@@ -11,6 +11,7 @@ import (
 type FromFile struct {
 	SourceRepositories []SourceRepository `yaml:"source_repositories"`
 	TemplatePath       string             `yaml:"template_path"`
+	OutputPath         string             `yaml:"output_path"`
 }
 
 // SourceRepository has details about a
