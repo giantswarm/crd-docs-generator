@@ -1,0 +1,71 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: examples.example.giantswarm.io
+spec:
+  group: example.giantswarm.io
+  names:
+    categories:
+    - common
+    - giantswarm
+    kind: Example
+    listKind: ExampleList
+    plural: examples
+    singular: example
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Example v1alpha1 represents an example of a custom resource definition (CRD).
+        type: object
+        required:
+        - spec
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            type: object
+            description: Specifies the desired state of an example resource.
+            properties:
+              myObject:
+                type: object
+                description: An example object that is nullable, without any required properties.
+                nullable: true
+                properties:
+                  mySubObject:
+                    type: object
+                    description: A nullable object as a property of 'myObject' with some required props.
+                    nullable: true
+                    properties:
+                      name:
+                        description: Name is a name of something.
+                        type: string
+                      namespace:
+                        description: Namespace is the namespace of something.
+                        type: string
+                    required:
+                    - name
+                  otherSubObject:
+                    type: object
+                    description: A non-nullable sub object.
+                    nullable: false
+                    properties:
+                      first:
+                        description: First string property.
+                        type: string
+                      second:
+                        description: Second string property.
+                        type: string
+    served: true
+    storage: true

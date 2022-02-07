@@ -1,0 +1,16 @@
+# Configuration for a test case
+# where we merge versions from two CRDs.
+
+template_path: simple.template
+source_repositories:
+  - url: https://github.com/giantswarm/crd-docs-generator
+    organization: giantswarm
+    short_name: crd-docs-generator
+    commit_reference: abc123
+    annotations_paths:
+      - testdata/case1/annotations
+    crd_paths:
+      - testdata/case1/crd
+    cr_paths:
+      - testdata/case1/cr
+    metadata: {}
