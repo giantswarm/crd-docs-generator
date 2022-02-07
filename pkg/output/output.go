@@ -128,6 +128,13 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	// Name output file after full CRD name.
 	outputFile := outputFolder + "/" + crd.Spec.Names.Plural + "." + crd.Spec.Group + ".md"
 
+	if _, err := os.Stat(outputFolder); os.IsNotExist(err) {
+		err := os.MkdirAll(outputFolder, os.ModePerm)
+		if err != nil {
+			return "", microerror.Mask(err)
+		}
+	}
+
 	handler, err := os.Create(outputFile)
 	if err != nil {
 		return "", microerror.Mask(err)
