@@ -14,12 +14,12 @@ spec:
     singular: example
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - name: v1alpha2
     served: true
     storage: false
     schema:
       openAPIV3Schema:
-        description: Example v1alpha1 represents an example of a custom resource definition (CRD).
+        description: Example v1alpha2 represents an example of a custom resource definition (CRD).
         type: object
         required:
         - spec
@@ -69,12 +69,12 @@ spec:
                       second:
                         description: Second string property.
                         type: string
-  - name: v1alpha2
+  - name: v1alpha3
     served: true
     storage: true
     schema:
       openAPIV3Schema:
-        description: Example v1alpha2 represents an example of a custom resource definition (CRD).
+        description: Example v1alpha3 represents an example of a custom resource definition (CRD).
         type: object
         required:
         - spec

@@ -12,9 +12,13 @@ weight: {{ .Weight }}
 Metadata:
 
 topics: {{ .Metadata.Topics }}
-providers{{ .Metadata.Providers }}
-deprecation: {{ .Metadata.Deprecation }}
-Replaced: {{ .Metadata.Deprecation.ReplacedBy }}
+providers: {{ .Metadata.Providers }}
+{{ with .Metadata.Deprecation }}
+deprecation: {{ . }}
+{{ with .ReplacedBy }}
+replaced by: {{ . }}
+{{ end }}
+{{ end }}
 
 
 {{ if .VersionSchemas }}
