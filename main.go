@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 
 	"strings"
 
@@ -127,7 +128,13 @@ func generateCrdDocs(configFilePath string) error {
 			repoAnnotations = append(repoAnnotations, a...)
 		}
 
+		crdFilesSlice := []string{}
 		for crdFile := range crdFiles {
+			crdFilesSlice = append(crdFilesSlice, crdFile)
+		}
+
+		sort.Strings(crdFilesSlice)
+		for _, crdFile := range crdFilesSlice {
 			log.Printf("INFO - repo %s - reading CRDs from file %s", sourceRepo.ShortName, crdFile)
 
 			crds, err := crd.Read(crdFile)
