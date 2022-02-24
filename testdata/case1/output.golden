@@ -1,4 +1,4 @@
-description: Example v1alpha2 represents an example of a custom resource definition (CRD).
+description: This is the description of examples.example.giantswarm.io v1alpha2 from file crd2.yaml.
 group: example.giantswarm.io
 name_plural: examples
 name_singular: example
