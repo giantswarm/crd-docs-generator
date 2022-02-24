@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- The order of versions in a CRD output page is now guaranteed.
 - The output path is now configurable via the config file directive `output_path`.
 - If the output folder does not exist, it will be created.
 

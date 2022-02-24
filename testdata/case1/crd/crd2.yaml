@@ -19,7 +19,7 @@ spec:
     storage: false
     schema:
       openAPIV3Schema:
-        description: Example v1alpha2 represents an example of a custom resource definition (CRD).
+        description: This is the description of examples.example.giantswarm.io v1alpha2 from file crd2.yaml.
         type: object
         required:
         - spec
@@ -74,7 +74,7 @@ spec:
     storage: true
     schema:
       openAPIV3Schema:
-        description: Example v1alpha3 represents an example of a custom resource definition (CRD).
+        description: This is the description of examples.example.giantswarm.io v1alpha3 from file crd2.yaml.
         type: object
         required:
         - spec
