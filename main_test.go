@@ -54,7 +54,7 @@ func Test_generateCrdDocs(t *testing.T) {
 
 			want := goldenValue(t, tt.golden, got, *update)
 			if diff := cmp.Diff(want, got); diff != "" {
-				t.Errorf("MakeGatewayInfo() mismatch (-want +got):\n%s", diff)
+				t.Errorf("generateCrdDocs() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
