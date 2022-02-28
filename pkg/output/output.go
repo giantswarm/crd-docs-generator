@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/Masterminds/sprig/v3"
@@ -114,6 +115,8 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 
 		data.Versions = append(data.Versions, version.Name)
 	}
+
+	sort.Strings(data.Versions)
 
 	// Add example CRs
 	for _, version := range data.Versions {

@@ -14,8 +14,8 @@ crd:
   source_repository: https://github.com/giantswarm/my-repo
   source_repository_ref: main
   versions:
-    - v1alpha2
     - v1alpha1
+    - v1alpha2
   topics:
     - first-topic
     - second-topic
@@ -54,7 +54,7 @@ source_repository_ref: main
 <dt class="scope">Scope:</dt>
 <dd class="scope">Namespaced</dd>
 <dt class="versions">Versions:</dt>
-<dd class="versions"><a class="version" href="#v1alpha2" title="Show schema for version v1alpha2">v1alpha2</a><a class="version" href="#v1alpha1" title="Show schema for version v1alpha1">v1alpha1</a></dd>
+<dd class="versions"><a class="version" href="#v1alpha1" title="Show schema for version v1alpha1">v1alpha1</a><a class="version" href="#v1alpha2" title="Show schema for version v1alpha2">v1alpha2</a></dd>
 </dl>
 
 
