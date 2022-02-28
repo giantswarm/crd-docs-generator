@@ -1,5 +1,5 @@
 # Configuration for a test case
-# where we merge versions from two CRDs.
+# where we merge versions from two CRD files.
 
 template_path: template.gotmpl
 output_path: testdata/case1/output
