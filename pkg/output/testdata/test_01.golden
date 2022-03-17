@@ -54,7 +54,8 @@ source_repository_ref: main
 <dt class="scope">Scope:</dt>
 <dd class="scope">Namespaced</dd>
 <dt class="versions">Versions:</dt>
-<dd class="versions"><a class="version" href="#v1alpha1" title="Show schema for version v1alpha1">v1alpha1</a><a class="version" href="#v1alpha2" title="Show schema for version v1alpha2">v1alpha2</a></dd>
+<dd class="versions"><a class="version" href="#v1alpha1" title="Show schema for version v1alpha1">v1alpha1</a></dd>
+<dd class="versions"><a class="version" href="#v1alpha2" title="Show schema for version v1alpha2">v1alpha2</a></dd>
 </dl>
 
 
@@ -96,7 +97,6 @@ This is an example CR
 
 
 </div>
-
 <div class="crd-schema-version">
 <h2 id="v1alpha2">Version v1alpha2</h2>
 
