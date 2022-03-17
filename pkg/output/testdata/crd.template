@@ -83,7 +83,7 @@ source_repository_ref: {{ .SourceRepositoryRef }}
 {{ $versionSchemas := .VersionSchemas }}
 {{ range .Versions -}}
 {{ $versionName := . -}}
-{{ $versionSchema := $versionSchemas.versionName -}}
+{{ $versionSchema := (index $versionSchemas $versionName) -}}
 <div class="crd-schema-version">
 <h2 id="{{$versionName}}">Version {{$versionName}}</h2>
 
