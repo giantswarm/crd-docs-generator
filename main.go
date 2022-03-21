@@ -146,10 +146,11 @@ func generateCrdDocs(configFilePath string) error {
 				versions := []string{}
 
 				for _, v := range crds[i].Spec.Versions {
-					fullKey := crds[i].Name + "_" + v.String()
+					fullKey := crds[i].Name + "_" + v.Name
+
 					_, exists := crdNameAndVersion[fullKey]
 					if exists {
-						log.Printf("WARN - repo %s - provides CRD %s version %s which is already added - skipping", sourceRepo.ShortName, crds[i].Name, v.String())
+						log.Printf("WARN - repo %s - provides CRD %s version %s which is already added - skipping", sourceRepo.ShortName, crds[i].Name, v.Name)
 						continue
 					}
 					crdNameAndVersion[fullKey] = true
