@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Potentially breaking:** Your templates might have to be adapted like done in [this commit](https://github.com/giantswarm/crd-docs-generator/pull/98/files?file-filters%5B%5D=.template&show-viewed-files=true).
 - The order of versions in a CRD output page is now guaranteed.
 - The output path is now configurable via the config file directive `output_path`.
 - If the output folder does not exist, it will be created.
