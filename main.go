@@ -157,7 +157,11 @@ func generateCrdDocs(configFilePath string) error {
 					versions = append(versions, v.Name)
 				}
 
-				log.Printf("INFO - repo %s - processing CRD %s with versions %s", sourceRepo.ShortName, crds[i].Name, versions)
+				if len(versions) == 0 {
+					log.Printf("WARN - repo %s - CRD %s in file %s provides no versions - skipping", sourceRepo.ShortName, crds[i].Name, crdFile)
+					continue
+				}
+				log.Printf("INFO - repo %s - processing CRD %s with versions %v", sourceRepo.ShortName, crds[i].Name, versions)
 
 				// Skip hidden CRDs and CRDs with missing metadata
 				meta, ok := sourceRepo.Metadata[crds[i].Name]
