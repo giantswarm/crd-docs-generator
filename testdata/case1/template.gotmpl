@@ -1,0 +1,60 @@
+description: {{ .Description }}
+group: {{ .Group }}
+name_plural: {{ .NamePlural }}
+name_singular: {{ .NameSingular }}
+scope: {{ .Scope }}
+source_repository_ref: {{ .SourceRepositoryRef }}
+source_repository: {{ .SourceRepository }}
+title: {{ .Title }}
+versions: {{ .Versions }}
+weight: {{ .Weight }}
+
+Metadata:
+
+topics: {{ .Metadata.Topics }}
+providers: {{ .Metadata.Providers }}
+{{ with .Metadata.Deprecation }}
+deprecation: {{ . }}
+{{ with .ReplacedBy }}
+replaced by: {{ . }}
+{{- end }}
+{{- end }}
+
+{{ if .VersionSchemas }}
+{{ range $versionName, $versionSchema := .VersionSchemas }}
+
+Version {{$versionName}}
+
+{{ with .ExampleCR }}
+Example CR
+
+```yaml
+{{ .|raw }}
+```
+{{ end }}
+
+Properties
+
+{{ range $versionSchema.Properties }}
+
+Depth: {{ .Depth }}
+Path: {{ .Path }}
+{{ with .Type }}{{ . }}{{ end}}
+{{ if not .Required }}{{ else }}Required{{ end }}
+
+{{ with .Description}}
+{{ .|markdown }}
+{{- end }}
+{{- end }}
+
+{{ if .Annotations }}
+Annotations
+
+{{ range $versionSchema.Annotations }}
+Annotation name: {{ .Annotation }}
+{{ with .Release }}{{ . }}{{ end }}
+{{ with .Documentation}}{{.|markdown}}{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

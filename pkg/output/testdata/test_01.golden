@@ -2,7 +2,7 @@
 title: Demo CRD schema reference (group demo.giantswarm.io)
 linkTitle: Demo
 description: |
-  Main description
+  Main description of v1alpha2
 weight: 100
 crd:
   name_camelcase: Demo
@@ -15,6 +15,7 @@ crd:
   source_repository_ref: main
   versions:
     - v1alpha1
+    - v1alpha2
   topics:
     - first-topic
     - second-topic
@@ -40,7 +41,7 @@ source_repository_ref: main
 # Demo
 
 
-<p class="crd-description">Main description</p>
+<p class="crd-description">Main description of v1alpha2</p>
 <dl class="crd-meta">
 <dt class="fullname">Full name:</dt>
 <dd class="fullname">demos.demo.giantswarm.io</dd>
@@ -54,6 +55,7 @@ source_repository_ref: main
 <dd class="scope">Namespaced</dd>
 <dt class="versions">Versions:</dt>
 <dd class="versions"><a class="version" href="#v1alpha1" title="Show schema for version v1alpha1">v1alpha1</a></dd>
+<dd class="versions"><a class="version" href="#v1alpha2" title="Show schema for version v1alpha2">v1alpha2</a></dd>
 </dl>
 
 
@@ -93,12 +95,43 @@ This is an example CR
 
 
 
-<h3 id="annotation-details-v1alpha1">Annotations</h3>
+
+</div>
+<div class="crd-schema-version">
+<h2 id="v1alpha2">Version v1alpha2</h2>
+
+
+
+<h3 id="property-details-v1alpha2">Properties</h3>
+
+
+<div class="property depth-0">
+<div class="property-header">
+<h3 class="property-path" id="v1alpha2-.first_property">.first_property</h3>
+</div>
+<div class="property-body">
+<div class="property-meta">
+<span class="property-type">string</span>
+<span class="property-required">Required</span>
+</div>
+
+<div class="property-description">
+<p>First property</p>
+
+</div>
+
+</div>
+</div>
+
+
+
+
+<h3 id="annotation-details-v1alpha2">Annotations</h3>
 
 
 <div class="annotation">
 <div class="annotation-header">
-<h3 class="annotation-path" id="v1alpha1-alpha.giantswarm.io/foo">alpha.giantswarm.io/foo</h3>
+<h3 class="annotation-path" id="v1alpha2-alpha.giantswarm.io/foo">alpha.giantswarm.io/foo</h3>
 </div>
 <div class="annotation-body">
 <div class="annotation-meta">

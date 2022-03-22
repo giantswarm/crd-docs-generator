@@ -1,0 +1,26 @@
+# Configuration for a test case
+# where we merge versions from two CRD files.
+
+template_path: template.gotmpl
+output_path: testdata/case1/output
+source_repositories:
+  - url: https://github.com/giantswarm/crd-docs-generator
+    organization: giantswarm
+    short_name: crd-docs-generator
+    commit_reference: merge-crds # FIXME: won't work after merging
+    annotations_paths:
+      - testdata/case1/annotations
+    crd_paths:
+      - testdata/case1/crd
+    cr_paths:
+      - testdata/case1/cr
+    metadata:
+      examples.example.giantswarm.io:
+        owner:
+          - example-owner
+        topics:
+          - topic1
+          - topic2
+        provider:
+          - provider1
+          - provider2

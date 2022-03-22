@@ -64,12 +64,34 @@ func TestWritePage(t *testing.T) {
 						Scope: "Namespaced",
 						Versions: []apiextensionsv1.CustomResourceDefinitionVersion{
 							{
+								Name:    "v1alpha2",
+								Served:  true,
+								Storage: true,
+								Schema: &apiextensionsv1.CustomResourceValidation{
+									OpenAPIV3Schema: &apiextensionsv1.JSONSchemaProps{
+										Description: "Main description of v1alpha2",
+										Type:        "object",
+										Format:      "",
+										Title:       "Object title",
+										Required:    []string{"first_property"},
+										Properties: map[string]apiextensionsv1.JSONSchemaProps{
+											"first_property": {
+												Description: "First property",
+												Type:        "string",
+												Format:      "",
+												Title:       "The title",
+											},
+										},
+									},
+								},
+							},
+							{
 								Name:    "v1alpha1",
 								Served:  true,
 								Storage: true,
 								Schema: &apiextensionsv1.CustomResourceValidation{
 									OpenAPIV3Schema: &apiextensionsv1.JSONSchemaProps{
-										Description: "Main description",
+										Description: "Main description of v1alpha1",
 										Type:        "object",
 										Format:      "",
 										Title:       "Object title",
@@ -92,7 +114,7 @@ func TestWritePage(t *testing.T) {
 					{
 						Annotation:    "alpha.giantswarm.io/foo",
 						CRDName:       "demos.demo.giantswarm.io",
-						CRDVersion:    "v1alpha1",
+						CRDVersion:    "v1alpha2",
 						Release:       "Since v16.0.0",
 						Documentation: "Here is some annotation documentation.",
 					},

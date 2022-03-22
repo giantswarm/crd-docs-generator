@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 
 	"strings"
 
@@ -39,8 +40,8 @@ const (
 	// Target path for our clone of the apiextensions repo.
 	repoFolder = "/tmp/gitclone"
 
-	// Path for Markdown output.
-	outputFolderPath = "./output"
+	// Default path for Markdown output (if not given in config)
+	defaultOutputPath = "./output"
 )
 
 func main() {
@@ -74,8 +75,13 @@ func generateCrdDocs(configFilePath string) error {
 		return microerror.Mask(err)
 	}
 
-	// Full names of CRDs found
-	crdNames := make(map[string]bool)
+	// Full names and versions of CRDs found, to avoid duplicates.
+	crdNameAndVersion := make(map[string]bool)
+
+	outputPath := configuration.OutputPath
+	if outputPath == "" {
+		outputPath = defaultOutputPath
+	}
 
 	// Loop over configured repositories
 	defer os.RemoveAll(repoFolder)
@@ -122,7 +128,13 @@ func generateCrdDocs(configFilePath string) error {
 			repoAnnotations = append(repoAnnotations, a...)
 		}
 
+		crdFilesSlice := []string{}
 		for crdFile := range crdFiles {
+			crdFilesSlice = append(crdFilesSlice, crdFile)
+		}
+
+		sort.Strings(crdFilesSlice)
+		for _, crdFile := range crdFilesSlice {
 			log.Printf("INFO - repo %s - reading CRDs from file %s", sourceRepo.ShortName, crdFile)
 
 			crds, err := crd.Read(crdFile)
@@ -131,18 +143,25 @@ func generateCrdDocs(configFilePath string) error {
 			}
 
 			for i := range crds {
+				// Collect versions of this CRD
 				versions := []string{}
 				for _, v := range crds[i].Spec.Versions {
+					fullKey := crds[i].Name + "_" + v.Name
+
+					_, exists := crdNameAndVersion[fullKey]
+					if exists {
+						log.Printf("WARN - repo %s - file %s provides CRD %s version %s which is already added - skipping", sourceRepo.ShortName, crdFile, crds[i].Name, v.Name)
+						continue
+					}
+					crdNameAndVersion[fullKey] = true
 					versions = append(versions, v.Name)
 				}
-				log.Printf("INFO - repo %s - processing CRD %s with versions %s", sourceRepo.ShortName, crds[i].Name, versions)
 
-				_, exists := crdNames[crds[i].Name]
-				if exists {
-					log.Printf("WARN - repo %s - provides CRD %s which is already added - skipping", sourceRepo.ShortName, crds[i].Name)
+				if len(versions) == 0 {
+					log.Printf("WARN - repo %s - CRD %s in file %s provides no versions - skipping", sourceRepo.ShortName, crds[i].Name, crdFile)
 					continue
 				}
-				crdNames[crds[i].Name] = true
+				log.Printf("INFO - repo %s - processing CRD %s with versions %v", sourceRepo.ShortName, crds[i].Name, versions)
 
 				// Skip hidden CRDs and CRDs with missing metadata
 				meta, ok := sourceRepo.Metadata[crds[i].Name]
@@ -191,7 +210,7 @@ func generateCrdDocs(configFilePath string) error {
 					crdAnnotations,
 					meta,
 					exampleCRs,
-					outputFolderPath,
+					outputPath,
 					sourceRepo.URL,
 					sourceRepo.CommitReference,
 					templatePath)
