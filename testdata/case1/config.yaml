@@ -7,7 +7,7 @@ source_repositories:
   - url: https://github.com/giantswarm/crd-docs-generator
     organization: giantswarm
     short_name: crd-docs-generator
-    commit_reference: merge-crds # FIXME: won't work after merging
+    commit_reference: main
     annotations_paths:
       - testdata/case1/annotations
     crd_paths:

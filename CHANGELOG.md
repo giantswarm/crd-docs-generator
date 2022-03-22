@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2022-03-22
+
 - **Potentially breaking:** Your templates might have to be adapted like done in [this commit](https://github.com/giantswarm/crd-docs-generator/pull/98/files?file-filters%5B%5D=.template&show-viewed-files=true).
 - The order of versions in a CRD output page is now guaranteed.
 - The output path is now configurable via the config file directive `output_path`.
@@ -100,7 +102,8 @@ All expect array values. Paths are relative to the source repo root. See the `co
 - Use config file for settings instead of flags
 - Switch CI from architect to architect-orb
 
-[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/giantswarm/crd-docs-generator/compare/v0.7.0...v0.7.1
