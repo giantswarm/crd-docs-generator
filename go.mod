@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.5.7
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0
-	github.com/spf13/cobra v1.3.0
+	github.com/spf13/cobra v1.4.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apiextensions-apiserver v0.20.15
 	k8s.io/apimachinery v0.23.5
