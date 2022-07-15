@@ -6,10 +6,12 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/ghodss/yaml v1.0.0
 	github.com/giantswarm/microerror v0.4.0
-	github.com/google/go-cmp v0.5.7
+	github.com/google/go-cmp v0.5.8
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0
-	github.com/spf13/cobra v1.3.0
+	github.com/spf13/cast v1.5.0 // indirect
+	github.com/spf13/cobra v1.5.0
+	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apiextensions-apiserver v0.20.15
 	k8s.io/apimachinery v0.23.5
