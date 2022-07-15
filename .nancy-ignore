@@ -8,3 +8,6 @@ CVE-2022-24687
 
 # For github.com/prometheus/client_golang@v1.7.1
 CVE-2022-21698
+
+# For github.com/miekg/dns@v1.0.14
+sonatype-2021-1401
