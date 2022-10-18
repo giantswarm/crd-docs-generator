@@ -1,6 +1,7 @@
 package annotations
 
 import (
+	"fmt"
 	"go/ast"
 	"go/doc"
 	"go/parser"
@@ -15,6 +16,8 @@ import (
 	"github.com/giantswarm/microerror"
 	"gopkg.in/yaml.v2"
 )
+
+const CRD_DOCS_GENERATOR = "CRD_DOCS_GENERATOR"
 
 type Annotation struct {
 	Documentation string
@@ -57,10 +60,9 @@ func Collect(startPath string) ([]CRDAnnotationSupport, error) {
 		if err != nil {
 			panic(err)
 		}
-		for _, constant := range p.Consts {
-			annotation := Annotation{}
 
-			err := yaml.UnmarshalStrict([]byte(constant.Doc), &annotation)
+		for _, constant := range p.Consts {
+			annotation, err := parseAnnotation(constant.Doc)
 			if err != nil {
 				log.Printf("WARN - Annotation in %s named %q does not provide compatible YAML docs", annotationFile, constant.Names[0])
 			}
@@ -83,6 +85,49 @@ func Collect(startPath string) ([]CRDAnnotationSupport, error) {
 	}
 
 	return Sort(annotations), nil
+}
+
+func parseAnnotation(rawAnnotation string) (*Annotation, error) {
+	lines := strings.Split(rawAnnotation, "\n")
+
+	crdCocsLineIndex := getCrdDocsLineIndex(lines)
+	if crdCocsLineIndex == -1 {
+		return nil, fmt.Errorf("No %s line found", CRD_DOCS_GENERATOR)
+	}
+
+	lines = lines[crdCocsLineIndex+1:]
+	lines = unIndent(lines)
+	rawAnnotation = strings.Join(lines, "\n")
+
+	annotation := &Annotation{}
+	err := yaml.UnmarshalStrict([]byte(rawAnnotation), annotation)
+	if err != nil {
+		return nil, err
+	}
+
+	return annotation, nil
+}
+
+func getCrdDocsLineIndex(lines []string) int {
+	for i, line := range lines {
+		if strings.Contains(line, CRD_DOCS_GENERATOR) {
+			return i
+		}
+	}
+
+	return -1
+}
+
+// removes leading tabs from each line
+func unIndent(lines []string) []string {
+	var result []string
+	for _, line := range lines {
+		if strings.HasPrefix(line, "\t") {
+			result = append(result, line[1:])
+		}
+	}
+
+	return result
 }
 
 func findFiles(startPath string) ([]string, error) {
