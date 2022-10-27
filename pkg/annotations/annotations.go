@@ -122,9 +122,7 @@ func getCrdDocsLineIndex(lines []string) int {
 func unIndent(lines []string) []string {
 	var result []string
 	for _, line := range lines {
-		if strings.HasPrefix(line, "\t") {
-			result = append(result, line[1:])
-		}
+		result = append(result, strings.TrimPrefix(line, "\t"))
 	}
 
 	return result
