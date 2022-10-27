@@ -65,6 +65,7 @@ func Collect(startPath string) ([]CRDAnnotationSupport, error) {
 			annotation, err := parseAnnotation(constant.Doc)
 			if err != nil {
 				log.Printf("WARN - Annotation in %s named %q does not provide compatible YAML docs", annotationFile, constant.Names[0])
+				continue
 			}
 
 			if annotation.Documentation != "" {
