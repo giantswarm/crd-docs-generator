@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2022-10-28
+
 ### Changed
 
 - **Potentially breaking:** Annotation doc comments have a new format, because go-fmt v1.19 breaks our old formatting. For an example look at the file /pkg/annotations/testdata/aws.go.
@@ -106,7 +108,8 @@ All expect array values. Paths are relative to the source repo root. See the `co
 - Use config file for settings instead of flags
 - Switch CI from architect to architect-orb
 
-[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.7.1...v0.8.0
