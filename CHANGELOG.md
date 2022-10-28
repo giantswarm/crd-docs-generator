@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Potentially breaking:** Annotation doc comments have a new format, because go-fmt v1.19 breaks our old formatting. For an example look at the file /pkg/annotations/testdata/aws.go.
+
 ## [0.10.0] - 2022-03-22
 
 - **Potentially breaking:** Your templates might have to be adapted like done in [this commit](https://github.com/giantswarm/crd-docs-generator/pull/98/files?file-filters%5B%5D=.template&show-viewed-files=true).
