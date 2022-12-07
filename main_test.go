@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -46,7 +46,7 @@ func Test_generateCrdDocs(t *testing.T) {
 				t.Errorf("generateCrdDocs() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			content, err := ioutil.ReadFile(tt.outputFile)
+			content, err := os.ReadFile(tt.outputFile)
 			if err != nil {
 				t.Fatalf("Error loading output file %s: %s", tt.outputFile, err)
 			}
@@ -75,7 +75,7 @@ func goldenValue(t *testing.T, goldenPath string, actual string, update bool) st
 		return actual
 	}
 
-	content, err := ioutil.ReadAll(f)
+	content, err := io.ReadAll(f)
 	if err != nil {
 		t.Fatalf("Error opening file %s: %s", goldenPath, err)
 	}

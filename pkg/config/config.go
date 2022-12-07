@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/giantswarm/microerror"
 	"gopkg.in/yaml.v2"
@@ -49,7 +49,7 @@ type DeprecationReplacedBy struct {
 func Read(path string) (*FromFile, error) {
 	f := FromFile{}
 
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, microerror.Maskf(CouldNotReadConfigFileError, err.Error())
 	}
