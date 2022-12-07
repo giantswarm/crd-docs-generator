@@ -1,7 +1,7 @@
 package crd
 
 import (
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/ghodss/yaml"
@@ -11,7 +11,7 @@ import (
 
 // Read reads a CRD YAML file and returns the Custom Resource Definition objects it represents.
 func Read(filePath string) ([]apiextensionsv1.CustomResourceDefinition, error) {
-	yamlBytes, err := ioutil.ReadFile(filePath)
+	yamlBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, microerror.Maskf(CouldNotReadCRDFileError, err.Error())
 	}

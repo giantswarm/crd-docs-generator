@@ -3,7 +3,6 @@ package output
 import (
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strings"
@@ -56,7 +55,7 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	repoRef,
 	templatePath string) (string, error) {
 
-	templateCode, err := ioutil.ReadFile(templatePath)
+	templateCode, err := os.ReadFile(templatePath)
 	if err != nil {
 		return "", microerror.Maskf(cannotOpenTemplate, "Could not read template file %s: %s", templatePath, err)
 	}

@@ -2,7 +2,7 @@ package output
 
 import (
 	"flag"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -144,7 +144,7 @@ func TestWritePage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tempDir, err := ioutil.TempDir("", "TestWritePage")
+			tempDir, err := os.MkdirTemp("", "TestWritePage")
 			if err != nil {
 				t.Fatalf("Could not create temp dir: %s", err)
 			}
@@ -156,7 +156,7 @@ func TestWritePage(t *testing.T) {
 				t.Logf("%s", microerror.Pretty(err, true))
 			}
 
-			gotBytes, err := ioutil.ReadFile(resultPath)
+			gotBytes, err := os.ReadFile(resultPath)
 			if err != nil {
 				t.Errorf("Could not open result file %s: %s", resultPath, err)
 			}
@@ -189,7 +189,7 @@ func goldenValue(t *testing.T, goldenFile string, actual string, update bool) st
 		return actual
 	}
 
-	content, err := ioutil.ReadAll(f)
+	content, err := io.ReadAll(f)
 	if err != nil {
 		t.Fatalf("Error reading content of file %s: %s", goldenPath, err)
 	}

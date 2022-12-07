@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -75,7 +75,7 @@ func goldenValue(t *testing.T, goldenPath string, actual string, update bool) st
 		return actual
 	}
 
-	content, err := ioutil.ReadAll(f)
+	content, err := io.ReadAll(f)
 	if err != nil {
 		t.Fatalf("Error opening file %s: %s", goldenPath, err)
 	}
