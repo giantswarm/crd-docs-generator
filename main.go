@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -186,7 +185,7 @@ func generateCrdDocs(configFilePath string) error {
 							continue
 						}
 
-						exampleCR, err := ioutil.ReadFile(crFilePath)
+						exampleCR, err := os.ReadFile(crFilePath)
 						if err != nil {
 							log.Printf("ERROR - repo %s - example CR %s could not be read: %s", sourceRepo.ShortName, crFilePath, err)
 						} else {

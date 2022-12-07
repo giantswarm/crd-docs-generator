@@ -46,7 +46,7 @@ func Test_generateCrdDocs(t *testing.T) {
 				t.Errorf("generateCrdDocs() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			content, err := ioutil.ReadFile(tt.outputFile)
+			content, err := os.ReadFile(tt.outputFile)
 			if err != nil {
 				t.Fatalf("Error loading output file %s: %s", tt.outputFile, err)
 			}

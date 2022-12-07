@@ -6,7 +6,6 @@ import (
 	"go/doc"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -145,7 +144,7 @@ func findFiles(startPath string) ([]string, error) {
 }
 
 func mustParse(fset *token.FileSet, filename string) *ast.File {
-	src, err := ioutil.ReadFile(filename)
+	src, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
