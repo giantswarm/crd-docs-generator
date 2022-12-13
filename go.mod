@@ -34,7 +34,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/crypto v0.3.0 // indirect
 	golang.org/x/net v0.2.0 // indirect
-	golang.org/x/text v0.4.0 // indirect
+	golang.org/x/text v0.5.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	k8s.io/klog/v2 v2.30.0 // indirect
 	k8s.io/utils v0.0.0-20211116205334-6203023598ed // indirect
@@ -46,4 +46,6 @@ replace (
 	github.com/coreos/etcd => github.com/coreos/etcd v3.3.27+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible => github.com/golang-jwt/jwt/v4 v4.0.0
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2 // CVE-2021-3121
+	// CVE-2022-41717
+	golang.org/x/net => golang.org/x/net v0.4.0
 )
