@@ -3,7 +3,7 @@ group: example.giantswarm.io
 name_plural: examples
 name_singular: example
 scope: Namespaced
-source_repository_ref: merge-crds
+source_repository_ref: main
 source_repository: https://github.com/giantswarm/crd-docs-generator
 title: Example
 versions: [v1alpha2 v1alpha3]
