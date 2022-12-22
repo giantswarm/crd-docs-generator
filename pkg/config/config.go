@@ -1,10 +1,11 @@
 package config
 
 import (
+	"bytes"
 	"os"
 
 	"github.com/giantswarm/microerror"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // FromFile represent a config file content.
@@ -47,17 +48,21 @@ type DeprecationReplacedBy struct {
 
 // Read reads a config file and returns a struct.
 func Read(path string) (*FromFile, error) {
-	f := FromFile{}
+	f := &FromFile{}
 
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, microerror.Maskf(CouldNotReadConfigFileError, err.Error())
 	}
 
-	err = yaml.UnmarshalStrict(data, &f)
+	reader := bytes.NewReader(data)
+	decoder := yaml.NewDecoder(reader)
+	// Fail on unknown fields.
+	decoder.KnownFields(true)
+	err = decoder.Decode(f)
 	if err != nil {
 		return nil, microerror.Maskf(CouldNotParseConfigFileError, err.Error())
 	}
 
-	return &f, nil
+	return f, nil
 }
