@@ -1,6 +1,7 @@
 package annotations
 
 import (
+	"bytes"
 	"fmt"
 	"go/ast"
 	"go/doc"
@@ -13,7 +14,7 @@ import (
 	"strings"
 
 	"github.com/giantswarm/microerror"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 const CRD_DOCS_GENERATOR = "CRD_DOCS_GENERATOR"
@@ -100,7 +101,11 @@ func parseAnnotation(rawAnnotation string) (*Annotation, error) {
 	rawAnnotation = strings.Join(lines, "\n")
 
 	annotation := &Annotation{}
-	err := yaml.UnmarshalStrict([]byte(rawAnnotation), annotation)
+	reader := bytes.NewReader([]byte(rawAnnotation))
+	decoder := yaml.NewDecoder(reader)
+	// Fail on unknown fields.
+	decoder.KnownFields(true)
+	err := decoder.Decode(annotation)
 	if err != nil {
 		return nil, err
 	}
