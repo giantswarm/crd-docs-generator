@@ -26,6 +26,7 @@ workflows:
       - architect/push-to-docker:
           name: push-crd-docs-generator-to-quay
           image: quay.io/giantswarm/crd-docs-generator
+          context: architect
           username_envar: QUAY_USERNAME
           password_envar: QUAY_PASSWORD
           requires:
