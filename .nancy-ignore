@@ -1,16 +1,3 @@
-# For github.com/hashicorp/consul/api@v1.11.0
-CVE-2022-29153
-CVE-2022-24687
-
-# For golang/github.com/hashicorp/consul/sdk@v0.8.0
-CVE-2022-29153
-CVE-2022-24687
-
-# For github.com/prometheus/client_golang@v1.7.1
-CVE-2022-21698
-
-# For github.com/miekg/dns@v1.0.14
-sonatype-2021-1401
-
 # For k8s.io/apiserver@v0.26.3
 sonatype-2022-6522 until=2023-06-13
+CVE-2020-8561 until=2023-07-04
