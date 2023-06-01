@@ -1,6 +1,7 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    ":reviewer(team:team-rainbow)"
   ],
   "labels": ["dependencies", "renovate"],
   "packageRules": [
