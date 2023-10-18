@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/ghodss/yaml v1.0.0
 	github.com/giantswarm/microerror v0.4.0
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/spf13/cobra v1.7.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -49,5 +49,5 @@ replace (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible => github.com/golang-jwt/jwt/v4 v4.0.0
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2 // CVE-2021-3121
 	// CVE-2022-41717
-	golang.org/x/net => golang.org/x/net v0.16.0
+	golang.org/x/net => golang.org/x/net v0.17.0
 )
