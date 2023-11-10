@@ -7,6 +7,8 @@ import (
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 
+const arrayItemIndicator = "[*]"
+
 // Property is a simplistic, flattened representation of a property
 // in a JSON Schema, without the recursion and containing only the elements
 // we intend to expose in our output.
@@ -62,15 +64,15 @@ func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, dept
 			// Add description of array member type
 			property := Property{
 				Depth:       depth + 1,
-				Name:        propname + "[*]",
-				Path:        path + "[*]",
+				Name:        propname + arrayItemIndicator,
+				Path:        path + arrayItemIndicator,
 				Description: schemaProps.Items.Schema.Description,
 				Type:        schemaProps.Items.Schema.Type,
 			}
 			properties = append(properties, property)
 
 			// Collect sub items properties
-			properties = Flatten(*schemaProps.Items.Schema, properties, depth+2, path+"[*]")
+			properties = Flatten(*schemaProps.Items.Schema, properties, depth+2, path+arrayItemIndicator)
 		}
 	}
 
