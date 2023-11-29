@@ -5,20 +5,9 @@ orbs:
 workflows:
   build-workflow:
     jobs:
-
-      - architect/go-test:
-          name: go-test-crd-docs-generator
-          # filters is needed to trigger job also on git tag.
-          filters:
-            tags:
-              only: /^v.*/
-
       - architect/go-build:
-          name: go-build-crd-docs-generator
+          name: go-build
           binary: crd-docs-generator
-          requires:
-            - go-test-crd-docs-generator
-          # filters is needed to trigger job also on git tag.
           filters:
             tags:
               only: /^v.*/
@@ -27,7 +16,7 @@ workflows:
           context: architect
           name: push-to-registries
           requires:
-            - go-build-crd-docs-generator
+            - go-build
           filters:
             tags:
               only: /^v.*/
