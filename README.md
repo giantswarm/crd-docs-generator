@@ -30,11 +30,11 @@ The generator can be executed in Docker using a command like this:
 docker run \
     -v $PWD/path/to/output-folder:/opt/crd-docs-generator/output \
     -v $PWD:/opt/crd-docs-generator/config \
-    quay.io/giantswarm/crd-docs-generator:0.11.0 \
+    gsoci.azurecr.io/giantswarm/crd-docs-generator:0.11.0 \
       --config /opt/crd-docs-generator/config/config.example.yaml
 ```
 
-Here, the tag `0.11.0` is the version number of the crd-docs-generator release you're going to use. Check the [image repository](https://quay.io/repository/giantswarm/crd-docs-generator?tab=tags) for available tags.
+Here, the tag `0.11.0` is the version number of the crd-docs-generator release you're going to use. See our GitHub releases for available tags.
 
 The volume mapping defines where the generated output will land.
 
