@@ -4,13 +4,14 @@ import (
 	"os"
 	"strings"
 
+	crossplanev1 "github.com/crossplane/crossplane/apis/apiextensions/v1"
 	"github.com/ghodss/yaml"
 	"github.com/giantswarm/microerror"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 
 // Read reads a CRD YAML file and returns the Custom Resource Definition objects it represents.
-func Read(filePath string) ([]apiextensionsv1.CustomResourceDefinition, error) {
+func Read(filePath string) ([]any, error) {
 	yamlBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, microerror.Maskf(CouldNotReadCRDFileError, err.Error())
@@ -18,7 +19,7 @@ func Read(filePath string) ([]apiextensionsv1.CustomResourceDefinition, error) {
 
 	// Split by "---"
 	parts := strings.Split(string(yamlBytes), "\n---\n")
-	crds := []apiextensionsv1.CustomResourceDefinition{}
+	crds := []any{}
 
 	for _, crdYAMLString := range parts {
 		crdYAMLBytes := []byte(crdYAMLString)
@@ -34,7 +35,16 @@ func Read(filePath string) ([]apiextensionsv1.CustomResourceDefinition, error) {
 			continue
 		}
 
-		crds = append(crds, crd)
+		if crd.APIVersion == "apiextensions.crossplane.io/v1" && crd.Kind == "CompositeResourceDefinition" {
+			xrd := crossplanev1.CompositeResourceDefinition{}
+			err = yaml.Unmarshal(crdYAMLBytes, &xrd)
+			if err != nil {
+				return nil, microerror.Maskf(CouldNotParseCRDFileError, err.Error())
+			}
+			crds = append(crds, xrd)
+		} else {
+			crds = append(crds, crd)
+		}
 	}
 
 	return crds, nil

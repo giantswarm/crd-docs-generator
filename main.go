@@ -20,6 +20,9 @@ import (
 	"github.com/giantswarm/crd-docs-generator/pkg/crd"
 	"github.com/giantswarm/crd-docs-generator/pkg/git"
 	"github.com/giantswarm/crd-docs-generator/pkg/output"
+
+	crossplanev1 "github.com/crossplane/crossplane/apis/apiextensions/v1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 
 // CRDDocsGenerator represents an instance of this command line tool, it carries
@@ -96,7 +99,8 @@ func generateCrdDocs(configFilePath string) error {
 			sourceRepo.Organization,
 			sourceRepo.ShortName,
 			sourceRepo.CommitReference,
-			clonePath)
+			clonePath,
+		)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -143,13 +147,34 @@ func generateCrdDocs(configFilePath string) error {
 
 			for i := range crds {
 				// Collect versions of this CRD
+				var (
+					current apiextensionsv1.CustomResourceDefinition
+					xrd     crossplanev1.CompositeResourceDefinition
+					ok      bool
+				)
+
+				if current, ok = crds[i].(apiextensionsv1.CustomResourceDefinition); !ok {
+					// We've almost certainly got a CompositeResourceDefinition here
+					// and in that case, we need to convert it to a CustomResourceDefinition
+					// for accessing the OpenAPI version schema.
+					if xrd, ok = crds[i].(crossplanev1.CompositeResourceDefinition); ok {
+						t, _ := json.Marshal(xrd)
+						err = json.Unmarshal(t, &current)
+						if err != nil {
+							log.Printf("WARN - repo %s - something went wrong in json.Unmarshal for file %s: %#v", sourceRepo.ShortName, crdFile, err)
+							continue
+						}
+					}
+				}
+
 				versions := []string{}
-				for _, v := range crds[i].Spec.Versions {
-					fullKey := crds[i].Name + "_" + v.Name
+				for _, v := range current.Spec.Versions {
+					fullKey := current.Name + "_" + v.Name
+					fmt.Printf("fullKey: %s\n", fullKey)
 
 					_, exists := crdNameAndVersion[fullKey]
 					if exists {
-						log.Printf("WARN - repo %s - file %s provides CRD %s version %s which is already added - skipping", sourceRepo.ShortName, crdFile, crds[i].Name, v.Name)
+						log.Printf("WARN - repo %s - file %s provides CRD %s version %s which is already added - skipping", sourceRepo.ShortName, crdFile, current.Name, v.Name)
 						continue
 					}
 					crdNameAndVersion[fullKey] = true
@@ -157,19 +182,20 @@ func generateCrdDocs(configFilePath string) error {
 				}
 
 				if len(versions) == 0 {
-					log.Printf("WARN - repo %s - CRD %s in file %s provides no versions - skipping", sourceRepo.ShortName, crds[i].Name, crdFile)
+					log.Printf("WARN - repo %s - CRD %s in file %s provides no versions - skipping", sourceRepo.ShortName, current.Name, crdFile)
 					continue
 				}
-				log.Printf("INFO - repo %s - processing CRD %s with versions %v", sourceRepo.ShortName, crds[i].Name, versions)
+				log.Printf("INFO - repo %s - processing CRD %s with versions %v", sourceRepo.ShortName, current.Name, versions)
 
 				// Skip hidden CRDs and CRDs with missing metadata
-				meta, ok := sourceRepo.Metadata[crds[i].Name]
+				meta, ok := sourceRepo.Metadata[current.Name]
 				if !ok {
-					log.Printf("WARN - repo %s - skipping %s as no metadata found", sourceRepo.ShortName, crds[i].Name)
+					log.Printf("WARN - repo %s - skipping %s as no metadata found", sourceRepo.ShortName, current.Name)
 					continue
 				}
+
 				if meta.Hidden {
-					log.Printf("INFO - repo %s - skipping %s as hidden by configuration", sourceRepo.ShortName, crds[i].Name)
+					log.Printf("INFO - repo %s - skipping %s as hidden by configuration", sourceRepo.ShortName, current.Name)
 					continue
 				}
 
@@ -180,7 +206,7 @@ func generateCrdDocs(configFilePath string) error {
 
 					for _, crPath := range sourceRepo.CRPaths {
 
-						crFilePath := fmt.Sprintf("%s/%s/%s_%s_%s.yaml", clonePath, crPath, crds[i].Spec.Group, version, crds[i].Spec.Names.Singular)
+						crFilePath := fmt.Sprintf("%s/%s/%s_%s_%s.yaml", clonePath, crPath, current.Spec.Group, version, current.Spec.Names.Singular)
 						if _, err := os.Stat(crFilePath); errors.Is(err, os.ErrNotExist) {
 							continue
 						}
@@ -196,16 +222,17 @@ func generateCrdDocs(configFilePath string) error {
 					}
 
 					if !found {
-						log.Printf("WARN - repo %s - No example CR found for %s version %s ", sourceRepo.ShortName, crds[i].Name, version)
+						log.Printf("WARN - repo %s - No example CR found for %s version %s ", sourceRepo.ShortName, current.Name, version)
 					}
 				}
 
 				templatePath := path.Dir(configFilePath) + "/" + configuration.TemplatePath
 
-				crdAnnotations := annotations.FilterForCRD(repoAnnotations, crds[i].Name, "")
+				crdAnnotations := annotations.FilterForCRD(repoAnnotations, current.Name, "")
 
 				_, err = output.WritePage(
-					crds[i],
+					current,
+					xrd,
 					crdAnnotations,
 					meta,
 					exampleCRs,
