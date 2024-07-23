@@ -30,22 +30,69 @@ func Read(filePath string) ([]any, error) {
 			return nil, microerror.Maskf(CouldNotParseCRDFileError, err.Error())
 		}
 
-		// If we had empty parts parsed, let's skip them.
-		if crd.Name == "" {
-			continue
-		}
-
-		if crd.APIVersion == "apiextensions.crossplane.io/v1" && crd.Kind == "CompositeResourceDefinition" {
+		// Both Crossplane and Kratix store their CRDs in different ways
+		//
+		// - Crossplane is an extended CRD format
+		// - Kratix is a wrapped CRD format
+		if crd.GroupVersionKind().Group == "apiextensions.crossplane.io" && crd.Kind == "CompositeResourceDefinition" {
 			xrd := crossplanev1.CompositeResourceDefinition{}
 			err = yaml.Unmarshal(crdYAMLBytes, &xrd)
 			if err != nil {
 				return nil, microerror.Maskf(CouldNotParseCRDFileError, err.Error())
 			}
 			crds = append(crds, xrd)
-		} else {
-			crds = append(crds, crd)
+			continue
+		} else if crd.GroupVersionKind().Group == "platform.kratix.io" && crd.Kind == "Promise" {
+			var iface any
+			err = yaml.Unmarshal(crdYAMLBytes, &iface)
+			if err != nil {
+				return nil, microerror.Maskf(CouldNotParseCRDFileError, err.Error())
+			}
+
+			err = ParsePromise(iface, &crd)
+			if err != nil {
+				return nil, microerror.Maskf(CouldNotParseCRDFileError, err.Error())
+			}
 		}
+
+		// If we had empty parts parsed, let's skip them.
+		if crd.Name == "" {
+			continue
+		}
+		crds = append(crds, crd)
 	}
 
 	return crds, nil
+}
+
+// Parse a kratix promise.
+func ParsePromise(iface any, crd *apiextensionsv1.CustomResourceDefinition) (err error) {
+	var (
+		api          map[string]any
+		spec         map[string]any
+		ok           bool
+		crdYAMLBytes []byte
+	)
+
+	spec, ok = iface.(map[string]any)["spec"].(map[string]any)
+	if !ok {
+		return microerror.Maskf(CouldNotParseCRDFileError, "kratix promise is missing its spec")
+	}
+
+	api, ok = spec["api"].(map[string]any)
+	if !ok {
+		return microerror.Maskf(CouldNotParseCRDFileError, "kratix promise is missing its spec.api")
+	}
+
+	crdYAMLBytes, err = yaml.Marshal(api)
+	if err != nil {
+		return microerror.Maskf(CouldNotParseCRDFileError, err.Error())
+	}
+
+	err = yaml.Unmarshal(crdYAMLBytes, &crd)
+	if err != nil {
+		return microerror.Maskf(CouldNotParseCRDFileError, err.Error())
+	}
+
+	return
 }
