@@ -80,6 +80,8 @@ func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, dept
 			enum = append(enum, v)
 		}
 
+		pattern := strings.ReplaceAll(schemaProps.Pattern, "|", "\\|")
+
 		property := Property{
 			Depth:        depth,
 			Description:  schemaProps.Description,
@@ -89,7 +91,7 @@ func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, dept
 			MaxLength:    maxLen,
 			Name:         propname,
 			Path:         path,
-			Pattern:      schemaProps.Pattern,
+			Pattern:      pattern,
 			Required:     required,
 			Type:         schemaProps.Type,
 		}
@@ -113,6 +115,8 @@ func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, dept
 				enum = append(enum, v)
 			}
 
+			pattern := strings.ReplaceAll(schemaProps.Items.Schema.Pattern, "|", "\\|")
+
 			// Add description of array member type
 			property := Property{
 				Depth:        depth + 1,
@@ -121,7 +125,7 @@ func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, dept
 				Immutability: ImmutabilityRules(schemaProps.Items.Schema.XValidations),
 				Name:         propname + arrayItemIndicator,
 				Path:         path + arrayItemIndicator,
-				Pattern:      schemaProps.Items.Schema.Pattern,
+				Pattern:      pattern,
 				Type:         schemaProps.Items.Schema.Type,
 			}
 
