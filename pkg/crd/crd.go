@@ -13,7 +13,7 @@ import (
 func Read(filePath string) ([]apiextensionsv1.CustomResourceDefinition, error) {
 	yamlBytes, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, microerror.Maskf(CouldNotReadCRDFileError, err.Error())
+		return nil, microerror.Maskf(CouldNotReadCRDFileError, "%s", err.Error())
 	}
 
 	// Split by "---"
@@ -26,7 +26,7 @@ func Read(filePath string) ([]apiextensionsv1.CustomResourceDefinition, error) {
 
 		err = yaml.Unmarshal(crdYAMLBytes, &crd)
 		if err != nil {
-			return nil, microerror.Maskf(CouldNotParseCRDFileError, err.Error())
+			return nil, microerror.Maskf(CouldNotParseCRDFileError, "%s", err.Error())
 		}
 
 		// If we had empty parts parsed, let's skip them.

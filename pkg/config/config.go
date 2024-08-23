@@ -52,7 +52,7 @@ func Read(path string) (*FromFile, error) {
 
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, microerror.Maskf(CouldNotReadConfigFileError, err.Error())
+		return nil, microerror.Maskf(CouldNotReadConfigFileError, "%s", err.Error())
 	}
 
 	reader := bytes.NewReader(data)
@@ -61,7 +61,7 @@ func Read(path string) (*FromFile, error) {
 	decoder.KnownFields(true)
 	err = decoder.Decode(f)
 	if err != nil {
-		return nil, microerror.Maskf(CouldNotParseConfigFileError, err.Error())
+		return nil, microerror.Maskf(CouldNotParseConfigFileError, "%s", err.Error())
 	}
 
 	return f, nil
