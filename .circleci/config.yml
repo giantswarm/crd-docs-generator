@@ -5,18 +5,22 @@ orbs:
 workflows:
   build-workflow:
     jobs:
-      - architect/go-build:
-          name: go-build
-          binary: crd-docs-generator
-          filters:
-            tags:
-              only: /^v.*/
+    - architect/go-build:
+        name: go-build
+        binary: crd-docs-generator
+        filters:
+          tags:
+            only: /^v.*/
 
-      - architect/push-to-registries:
-          context: architect
-          name: push-to-registries
-          requires:
-            - go-build
-          filters:
-            tags:
-              only: /^v.*/
+    - architect/push-to-registries:
+        context: architect
+        name: push-to-registries
+        requires:
+        - go-build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore:
+            - main
+            - master
