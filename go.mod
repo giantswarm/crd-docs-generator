@@ -2,7 +2,7 @@ module github.com/giantswarm/crd-docs-generator
 
 go 1.22.0
 
-toolchain go1.23.3
+toolchain go1.23.4
 
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
