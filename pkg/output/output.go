@@ -15,16 +15,23 @@ import (
 	"github.com/giantswarm/crd-docs-generator/pkg/annotations"
 	"github.com/giantswarm/crd-docs-generator/pkg/config"
 	"github.com/giantswarm/crd-docs-generator/pkg/jsonschema"
+
+	crossplanev1 "github.com/crossplane/crossplane/apis/apiextensions/v1"
 )
 
 // PageData is all the data we pass to the HTML template for the CRD detail page.
 type PageData struct {
+	ClaimName           string
+	ClaimNamesPlural    string
+	DefaultComposition  string
+	EnforcedComposition string
 	Description         string
 	Metadata            config.CRDItem
 	Group               string
 	NamePlural          string
 	NameSingular        string
 	Scope               string
+	ShortNames          []string
 	SourceRepository    string
 	SourceRepositoryRef string
 	Title               string
@@ -46,14 +53,18 @@ type SchemaVersion struct {
 }
 
 // WritePage creates a CRD schema documentation Markdown page.
-func WritePage(crd apiextensionsv1.CustomResourceDefinition,
+func WritePage(
+	crd apiextensionsv1.CustomResourceDefinition,
+	xrd crossplanev1.CompositeResourceDefinition,
 	crdAnnotations []annotations.CRDAnnotationSupport,
 	md config.CRDItem,
 	examplesCRs map[string]string,
 	outputFolder,
 	repoURL,
 	repoRef,
-	templatePath string) (string, error) {
+	templatePath string,
+) (string, error) {
+	var data PageData
 
 	templateCode, err := os.ReadFile(templatePath)
 	if err != nil {
@@ -68,12 +79,13 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	funcMap["join"] = strings.Join
 	// Return raw string
 	funcMap["raw"] = rawString
+	// Indent raw string
+	funcMap["rawindent"] = rawIndent
 
 	// Read our output template.
 	tpl := template.Must(template.New("schemapage").Funcs(funcMap).Parse(string(templateCode)))
 
-	// Collect values to pass to our output template.
-	data := PageData{
+	data = PageData{
 		Group:               crd.Spec.Group,
 		Metadata:            md,
 		NamePlural:          crd.Spec.Names.Plural,
@@ -84,6 +96,15 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 		Title:               crd.Spec.Names.Kind,
 		Weight:              100,
 		VersionSchemas:      make(map[string]SchemaVersion),
+	}
+
+	// Collect values to pass to our output template.
+	if crd.Kind == "CompositeResourceDefinition" {
+		data.ClaimName = xrd.Spec.ClaimNames.Kind
+		data.ClaimNamesPlural = xrd.Spec.ClaimNames.Plural
+		data.DefaultComposition = xrd.Spec.DefaultCompositionRef.Name
+		data.EnforcedComposition = xrd.Spec.EnforcedCompositionRef.Name
+		data.ShortNames = xrd.Spec.Names.ShortNames
 	}
 
 	// Iterate schema versions
@@ -162,6 +183,13 @@ func toMarkdown(input string) template.HTML {
 }
 
 func rawString(input string) template.HTML {
+	// To mitigate gosec "this method will not auto-escape HTML. Verify data is well formed"
+	// #nosec G203
+	return template.HTML(input)
+}
+
+func rawIndent(input string) template.HTML {
+	input = strings.ReplaceAll(input, "\n", "\n  ")
 	// To mitigate gosec "this method will not auto-escape HTML. Verify data is well formed"
 	// #nosec G203
 	return template.HTML(input)

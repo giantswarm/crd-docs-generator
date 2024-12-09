@@ -15,7 +15,7 @@ func TestRead(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []apiextensionsv1.CustomResourceDefinition
+		want    []any
 		wantErr bool
 	}{
 		{
@@ -23,8 +23,8 @@ func TestRead(t *testing.T) {
 			args: args{
 				filePath: "testdata/awsclusterconfig.yaml",
 			},
-			want: []apiextensionsv1.CustomResourceDefinition{
-				{
+			want: []any{
+				apiextensionsv1.CustomResourceDefinition{
 					TypeMeta: metav1.TypeMeta{
 						Kind:       "CustomResourceDefinition",
 						APIVersion: "apiextensions.k8s.io/v1",

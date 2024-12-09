@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	crossplanev1 "github.com/crossplane/crossplane/apis/apiextensions/v1"
 	"github.com/giantswarm/microerror"
 	"github.com/google/go-cmp/cmp"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
@@ -27,6 +28,7 @@ func TestMain(m *testing.M) {
 func TestWritePage(t *testing.T) {
 	type args struct {
 		crd          apiextensionsv1.CustomResourceDefinition
+		xrd          crossplanev1.CompositeResourceDefinition
 		annotations  []annotations.CRDAnnotationSupport
 		md           config.CRDItem
 		examples     map[string]string
@@ -110,6 +112,7 @@ func TestWritePage(t *testing.T) {
 						},
 					},
 				},
+				xrd: crossplanev1.CompositeResourceDefinition{},
 				annotations: []annotations.CRDAnnotationSupport{
 					{
 						Annotation:    "alpha.giantswarm.io/foo",
@@ -150,7 +153,7 @@ func TestWritePage(t *testing.T) {
 			}
 			defer os.RemoveAll(tempDir)
 
-			resultPath, err := WritePage(tt.args.crd, tt.args.annotations, tt.args.md, tt.args.examples, tempDir, tt.args.repoURL, tt.args.repoRef, tt.args.templatePath)
+			resultPath, err := WritePage(tt.args.crd, tt.args.xrd, tt.args.annotations, tt.args.md, tt.args.examples, tempDir, tt.args.repoURL, tt.args.repoRef, tt.args.templatePath)
 			if err != tt.wantErr {
 				t.Errorf("WritePage() error = %v, wantErr %v", err, tt.wantErr)
 				t.Logf("%s", microerror.Pretty(err, true))
