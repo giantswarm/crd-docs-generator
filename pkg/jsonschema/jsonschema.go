@@ -3,6 +3,7 @@ package jsonschema
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
@@ -13,18 +14,30 @@ const arrayItemIndicator = "[*]"
 // in a JSON Schema, without the recursion and containing only the elements
 // we intend to expose in our output.
 type Property struct {
+	// The default value of the attribute.
+	Default string
 	// The depth of the item in the JSONPath hierarchy
 	Depth int8
-	// Path is the full JSONpath path of the attribute, e. g. ".spec.version".
-	Path string
-	// Name is the attribute name.
-	Name string
-	// Type is the textual representaiton of the type ("object", "array", "number", "string", "boolean").
-	Type string
 	// Description is a user-friendly description of the attribute.
 	Description string
+	// Enum is a list of possible values for the attribute.
+	Enum []string
+	// Immutability specifies how the attribute is immutable.
+	Immutability string
+	// MinLength is the minimum length of the attribute.
+	MinLength int
+	// MaxLength is the maximum length of the attribute.
+	MaxLength int
+	// Name is the attribute name.
+	Name string
+	// Path is the full JSONpath path of the attribute, e. g. ".spec.version".
+	Path string
+	// Pattern is the validation pattern required for this attribute.
+	Pattern string
 	// Required specifies whether the property is required.
 	Required bool
+	// Type is the textual representaiton of the type ("object", "array", "number", "string", "boolean").
+	Type string
 }
 
 // Flatten recurses over all properties of a JSON Schema
@@ -45,13 +58,48 @@ func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, dept
 			required = true
 		}
 
+		var minLen int = 0
+		if schemaProps.MinItems != nil {
+			minLen = int(*schemaProps.MinItems)
+		}
+
+		var maxLen int = -1
+		if schemaProps.MaxItems != nil {
+			maxLen = int(*schemaProps.MaxItems)
+		}
+
+		if schemaProps.Type == "map" {
+			minLen = int(*schemaProps.MinProperties)
+			maxLen = int(*schemaProps.MaxProperties)
+		}
+
+		var enum []string
+		for _, e := range schemaProps.Enum {
+			var v string = string(e.Raw)
+			v = strings.ReplaceAll(v, "\"", "")
+			enum = append(enum, v)
+		}
+
+		pattern := strings.ReplaceAll(schemaProps.Pattern, "|", "\\|")
+		description := strings.ReplaceAll(schemaProps.Description, "\n\n", "\n")
+
 		property := Property{
-			Depth:       depth,
-			Name:        propname,
-			Path:        path,
-			Description: schemaProps.Description,
-			Type:        schemaProps.Type,
-			Required:    required,
+			Depth:        depth,
+			Description:  description,
+			Enum:         enum,
+			Immutability: ImmutabilityRules(schemaProps.XValidations),
+			MinLength:    minLen,
+			MaxLength:    maxLen,
+			Name:         propname,
+			Path:         path,
+			Pattern:      pattern,
+			Required:     required,
+			Type:         schemaProps.Type,
+		}
+
+		if schemaProps.Default != nil {
+			property.Default = string(schemaProps.Default.Raw)
+			property.Default = strings.ReplaceAll(property.Default, "\"", "")
 		}
 
 		properties = append(properties, property)
@@ -61,13 +109,31 @@ func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, dept
 		}
 
 		if schemaProps.Type == "array" && schemaProps.Items != nil {
+			var enum []string
+			for _, e := range schemaProps.Enum {
+				var v string = string(e.Raw)
+				v = strings.ReplaceAll(v, "\"", "")
+				enum = append(enum, v)
+			}
+
+			pattern := strings.ReplaceAll(schemaProps.Items.Schema.Pattern, "|", "\\|")
+			description := strings.ReplaceAll(schemaProps.Items.Schema.Description, "\n\n", "\n")
+
 			// Add description of array member type
 			property := Property{
-				Depth:       depth + 1,
-				Name:        propname + arrayItemIndicator,
-				Path:        path + arrayItemIndicator,
-				Description: schemaProps.Items.Schema.Description,
-				Type:        schemaProps.Items.Schema.Type,
+				Depth:        depth + 1,
+				Description:  description,
+				Enum:         enum,
+				Immutability: ImmutabilityRules(schemaProps.Items.Schema.XValidations),
+				Name:         propname + arrayItemIndicator,
+				Path:         path + arrayItemIndicator,
+				Pattern:      pattern,
+				Type:         schemaProps.Items.Schema.Type,
+			}
+
+			if schemaProps.Items.Schema.Default != nil {
+				property.Default = string(schemaProps.Items.Schema.Default.Raw)
+				property.Default = strings.ReplaceAll(property.Default, "\"", "")
 			}
 			properties = append(properties, property)
 
@@ -82,4 +148,21 @@ func Flatten(schema apiextensionsv1.JSONSchemaProps, properties []Property, dept
 	})
 
 	return properties
+}
+
+func ImmutabilityRules(rules apiextensionsv1.ValidationRules) string {
+	var immutable string = "None"
+	for _, v := range rules {
+		switch v.Rule {
+		case "self == oldSelf":
+			immutable = "immutable"
+		case "self >= oldSelf":
+			immutable = "increment only"
+		case "oldSelf.all(x, x in self)":
+			immutable = "append only"
+		case "oldSelf.all(key, key in self && self[key] == oldSelf[key])":
+			immutable = "append only, immutable keys"
+		}
+	}
+	return immutable
 }
