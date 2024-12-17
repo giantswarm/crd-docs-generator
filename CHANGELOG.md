@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.11.2] - 2024-12-17
 
+### Changed
+
+- No functional changes compared to 0.11.1, just a `go.mod` cleanup that should enable installation via `go install`.
+
 ## [0.11.1] - 2024-02-21
 
 ### Changed
