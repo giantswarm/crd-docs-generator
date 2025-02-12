@@ -293,7 +293,7 @@ source_repositories:
       flannelconfigs.core.giantswarm.io:
         hidden: true
       g8scontrolplanes.infrastructure.giantswarm.io:
-        owner: 
+        owner:
           - https://github.com/orgs/giantswarm/teams/team-phoenix
         provider:
           - aws
