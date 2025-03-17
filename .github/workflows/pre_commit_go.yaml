@@ -21,7 +21,7 @@ jobs:
       uses: giantswarm/install-binary-action@c37eb401e5092993fc76d545030b1d1769e61237 # v3.0.0
       with:
         binary: golangci-lint
-        version: v1.64.7
+        version: "1.64.7"
     - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
       env:
         GOGC: "20" # keep golangci-lint memory usage in check
