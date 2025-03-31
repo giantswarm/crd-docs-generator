@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -55,6 +56,7 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	repoRef,
 	templatePath string) (string, error) {
 
+	templatePath = filepath.Clean(templatePath)
 	templateCode, err := os.ReadFile(templatePath)
 	if err != nil {
 		return "", microerror.Maskf(cannotOpenTemplate, "Could not read template file %s: %s", templatePath, err)
@@ -131,12 +133,13 @@ func WritePage(crd apiextensionsv1.CustomResourceDefinition,
 	outputFile := outputFolder + "/" + crd.Spec.Names.Plural + "." + crd.Spec.Group + ".md"
 
 	if _, err := os.Stat(outputFolder); os.IsNotExist(err) {
-		err := os.MkdirAll(outputFolder, os.ModePerm)
+		err := os.MkdirAll(outputFolder, 0750)
 		if err != nil {
 			return "", microerror.Mask(err)
 		}
 	}
 
+	outputFile = filepath.Clean(outputFile)
 	handler, err := os.Create(outputFile)
 	if err != nil {
 		return "", microerror.Mask(err)

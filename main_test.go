@@ -4,6 +4,7 @@ import (
 	"flag"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -63,8 +64,9 @@ func Test_generateCrdDocs(t *testing.T) {
 func goldenValue(t *testing.T, goldenPath string, actual string, update bool) string {
 	t.Helper()
 
-	f, _ := os.OpenFile(goldenPath, os.O_RDWR, 0644)
-	defer f.Close()
+	goldenPath = filepath.Clean(goldenPath)
+	f, _ := os.OpenFile(goldenPath, os.O_RDWR, 0600)
+	defer func() { _ = f.Close() }()
 
 	if update {
 		_, err := f.WriteString(actual)

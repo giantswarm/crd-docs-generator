@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 
 	"github.com/giantswarm/microerror"
 	"gopkg.in/yaml.v3"
@@ -50,6 +51,7 @@ type DeprecationReplacedBy struct {
 func Read(path string) (*FromFile, error) {
 	f := &FromFile{}
 
+	path = filepath.Clean(path)
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, microerror.Maskf(CouldNotReadConfigFileError, "%s", err.Error())

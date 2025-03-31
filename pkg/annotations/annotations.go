@@ -71,7 +71,7 @@ func Collect(startPath string) ([]CRDAnnotationSupport, error) {
 			if annotation.Documentation != "" {
 				for _, crdAPI := range annotation.Support {
 					rawAnnotation := constant.Decl.Specs[0].(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
-					annotationValue := strings.Replace(rawAnnotation, "\"", "", -1)
+					annotationValue := strings.ReplaceAll(rawAnnotation, "\"", "")
 
 					annotations = append(annotations, CRDAnnotationSupport{
 						Annotation:    annotationValue,
@@ -93,7 +93,7 @@ func parseAnnotation(rawAnnotation string) (*Annotation, error) {
 
 	crdCocsLineIndex := getCrdDocsLineIndex(lines)
 	if crdCocsLineIndex == -1 {
-		return nil, fmt.Errorf("No %s line found", CRD_DOCS_GENERATOR)
+		return nil, fmt.Errorf("no %s line found", CRD_DOCS_GENERATOR)
 	}
 
 	lines = lines[crdCocsLineIndex+1:]
@@ -149,6 +149,7 @@ func findFiles(startPath string) ([]string, error) {
 }
 
 func mustParse(fset *token.FileSet, filename string) *ast.File {
+	filename = filepath.Clean(filename)
 	src, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)
