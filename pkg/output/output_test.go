@@ -148,7 +148,7 @@ func TestWritePage(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not create temp dir: %s", err)
 			}
-			defer os.RemoveAll(tempDir)
+			defer func() { _ = os.RemoveAll(tempDir) }()
 
 			resultPath, err := WritePage(tt.args.crd, tt.args.annotations, tt.args.md, tt.args.examples, tempDir, tt.args.repoURL, tt.args.repoRef, tt.args.templatePath)
 			if err != tt.wantErr {
@@ -156,7 +156,7 @@ func TestWritePage(t *testing.T) {
 				t.Logf("%s", microerror.Pretty(err, true))
 			}
 
-			gotBytes, err := os.ReadFile(resultPath)
+			gotBytes, err := os.ReadFile(resultPath) //nolint:gosec
 			if err != nil {
 				t.Errorf("Could not open result file %s: %s", resultPath, err)
 			}
@@ -174,11 +174,11 @@ func goldenValue(t *testing.T, goldenFile string, actual string, update bool) st
 	t.Helper()
 	goldenPath := "testdata/" + goldenFile + ".golden"
 
-	f, err := os.OpenFile(goldenPath, os.O_RDWR, 0644)
+	f, err := os.OpenFile(goldenPath, os.O_RDWR, 0644) //nolint:gosec
 	if err != nil {
 		t.Fatalf("Error opening file %s: %s", goldenPath, err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	if update {
 		_, err := f.WriteString(actual)

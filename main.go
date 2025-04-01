@@ -83,7 +83,7 @@ func generateCrdDocs(configFilePath string) error {
 	}
 
 	// Loop over configured repositories
-	defer os.RemoveAll(repoFolder)
+	defer func() { _ = os.RemoveAll(repoFolder) }()
 	for _, sourceRepo := range configuration.SourceRepositories {
 		// List of source YAML files containing CRD definitions.
 		crdFiles := make(map[string]bool)
@@ -185,6 +185,7 @@ func generateCrdDocs(configFilePath string) error {
 							continue
 						}
 
+						crFilePath = filepath.Clean(crFilePath)
 						exampleCR, err := os.ReadFile(crFilePath)
 						if err != nil {
 							log.Printf("ERROR - repo %s - example CR %s could not be read: %s", sourceRepo.ShortName, crFilePath, err)
