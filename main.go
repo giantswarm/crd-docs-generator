@@ -193,7 +193,6 @@ func generateCrdDocs(configFilePath string) error {
 							}
 						}
 
-						log.Printf("ERROR - repo %s - example CR %s could not be read: %s", sourceRepo.ShortName, crFilePath, err)
 						crFilePath = filepath.Clean(crFilePath)
 						exampleCR, err := os.ReadFile(crFilePath)
 						if err != nil {
