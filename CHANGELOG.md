@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.4] - 2025-04-23
+
 ### Changed
 
 - Dependency updates
@@ -128,7 +130,8 @@ All expect array values. Paths are relative to the source repo root. See the `co
 - Use config file for settings instead of flags
 - Switch CI from architect to architect-orb
 
-[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.3...HEAD
+[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.4...HEAD
+[0.11.4]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.0...v0.11.1
