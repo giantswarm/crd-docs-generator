@@ -179,12 +179,21 @@ func generateCrdDocs(configFilePath string) error {
 					found := false
 
 					for _, crPath := range sourceRepo.CRPaths {
-
+						// Check if the example CR in the existing format exists (e.g. observability.giantswarm.io_v1alpha1_grafanaorganization.yaml)
 						crFilePath := fmt.Sprintf("%s/%s/%s_%s_%s.yaml", clonePath, crPath, crds[i].Spec.Group, version, crds[i].Spec.Names.Singular)
 						if _, err := os.Stat(crFilePath); errors.Is(err, os.ErrNotExist) {
-							continue
+							if crGroupAndDomain := strings.Split(crds[i].Spec.Group, "."); len(crGroupAndDomain) >= 2 {
+								// Check if the example CR in the kube-builder format exists (e.g. observability_v1alpha1_grafanaorganization.yaml)
+								crFilePath = fmt.Sprintf("%s/%s/%s_%s_%s.yaml", clonePath, crPath, crGroupAndDomain[0], version, crds[i].Spec.Names.Singular)
+								if _, err := os.Stat(crFilePath); errors.Is(err, os.ErrNotExist) {
+									continue
+								}
+							} else {
+								continue
+							}
 						}
 
+						log.Printf("ERROR - repo %s - example CR %s could not be read: %s", sourceRepo.ShortName, crFilePath, err)
 						crFilePath = filepath.Clean(crFilePath)
 						exampleCR, err := os.ReadFile(crFilePath)
 						if err != nil {
@@ -197,7 +206,7 @@ func generateCrdDocs(configFilePath string) error {
 					}
 
 					if !found {
-						log.Printf("WARN - repo %s - No example CR found for %s version %s ", sourceRepo.ShortName, crds[i].Name, version)
+						log.Printf("WARN - repo %s - No example CR found for %s version %s", sourceRepo.ShortName, crds[i].Name, version)
 					}
 				}
 
