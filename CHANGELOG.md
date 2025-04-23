@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
 - Dependency updates
+- Support the kube-builder generated CRD sample pattern that does not renders the CRD domain (e.g. giantswarm.io) into the filename.
 
 ## [0.11.3] - 2025-03-06
 
