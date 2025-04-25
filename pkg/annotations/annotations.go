@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	"github.com/giantswarm/microerror"
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 const CRD_DOCS_GENERATOR = "CRD_DOCS_GENERATOR"
@@ -102,9 +102,8 @@ func parseAnnotation(rawAnnotation string) (*Annotation, error) {
 
 	annotation := &Annotation{}
 	reader := bytes.NewReader([]byte(rawAnnotation))
-	decoder := yaml.NewDecoder(reader)
 	// Fail on unknown fields.
-	decoder.KnownFields(true)
+	decoder := yaml.NewDecoder(reader, yaml.DisallowUnknownField())
 	err := decoder.Decode(annotation)
 	if err != nil {
 		return nil, err

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/giantswarm/microerror"
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 // FromFile represent a config file content.
@@ -58,9 +58,8 @@ func Read(path string) (*FromFile, error) {
 	}
 
 	reader := bytes.NewReader(data)
-	decoder := yaml.NewDecoder(reader)
 	// Fail on unknown fields.
-	decoder.KnownFields(true)
+	decoder := yaml.NewDecoder(reader, yaml.DisallowUnknownField())
 	err = decoder.Decode(f)
 	if err != nil {
 		return nil, microerror.Maskf(CouldNotParseConfigFileError, "%s", err.Error())
