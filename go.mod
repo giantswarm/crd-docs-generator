@@ -12,8 +12,8 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/spf13/cobra v1.9.1
-	k8s.io/apiextensions-apiserver v0.33.1
-	k8s.io/apimachinery v0.33.1
+	k8s.io/apiextensions-apiserver v0.33.2
+	k8s.io/apimachinery v0.33.2
 )
 
 require (
