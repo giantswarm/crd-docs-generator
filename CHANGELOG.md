@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Switched YAML parser from `gopkg.in/yaml.v3` to `github.com/goccy/go-yaml`.
+- Dummy change
 
 ## [0.11.4] - 2025-04-23
 
