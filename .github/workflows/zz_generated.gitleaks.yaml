@@ -11,4 +11,4 @@ on:
 
 jobs:
   publish:
-    uses: giantswarm/github-workflows/.github/workflows/gitleaks.yaml@main
+    uses: giantswarm/github-workflows/.github/workflows/gitleaks.yaml@specify-permissions

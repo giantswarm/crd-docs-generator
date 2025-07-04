@@ -19,7 +19,7 @@ on:
 
 jobs:
   fix:
-    uses: giantswarm/github-workflows/.github/workflows/fix-vulnerabilities.yaml@main
+    uses: giantswarm/github-workflows/.github/workflows/fix-vulnerabilities.yaml@specify-permissions
     with:
       branch: ${{ inputs.branch || github.ref }}
     secrets:
