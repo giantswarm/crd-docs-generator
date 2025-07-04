@@ -1,0 +1,13 @@
+name: "Go coverage report"
+on:
+  pull_request:
+  push:
+    branches:
+      # Must run for the default branch!
+      - main
+
+jobs:
+  coverage:
+    uses: giantswarm/github-workflows/.github/workflows/go-coverage.yaml@specify-permissions
+    secrets:
+      token: "${{ secrets.TAYLORBOT_GITHUB_ACTION }}"
