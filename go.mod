@@ -11,7 +11,7 @@ require (
 	github.com/goccy/go-yaml v1.19.0
 	github.com/google/go-cmp v0.7.0
 	github.com/russross/blackfriday/v2 v2.1.0
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	k8s.io/apiextensions-apiserver v0.34.2
 	k8s.io/apimachinery v0.34.2
 )
