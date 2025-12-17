@@ -123,11 +123,7 @@
           "description": "List of topics/categories this CRD belongs to",
           "items": {
             "type": "string",
-            "enum": [
-              "apps",
-              "managementcluster",
-              "workloadcluster"
-            ]
+            "pattern": "^[a-zA-Z0-9-]+$"
           },
           "uniqueItems": true
         },
