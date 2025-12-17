@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/giantswarm/crd-docs-generator/config-schema.json",
+  "title": "CRD Documentation Generator Configuration",
+  "description": "Configuration schema for the CRD documentation generator tool",
+  "$comment": "This schema validates configuration files for the Giant Swarm CRD documentation generator. It enforces strict validation to match the Go struct definitions.",
+  "type": "object",
+  "required": [
+    "source_repositories",
+    "template_path", 
+    "output_path"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "source_repositories": {
+      "type": "array",
+      "description": "List of repositories containing CRDs. Sequence is important - if several repos provide the same CRD (based on the full name), the first repo wins.",
+      "items": {
+        "$ref": "#/$defs/SourceRepository"
+      },
+      "minItems": 1
+    },
+    "template_path": {
+      "type": "string",
+      "description": "Path to the template file used for generating documentation",
+      "minLength": 1
+    },
+    "output_path": {
+      "type": "string",
+      "description": "Path where the generated documentation will be written",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "SourceRepository": {
+      "type": "object",
+      "description": "Details about a source repository to find CRDs in",
+      "required": [
+        "url",
+        "organization",
+        "short_name"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL of the repository",
+          "format": "uri",
+          "pattern": "^https://github\\.com/[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+/?$"
+        },
+        "organization": {
+          "type": "string",
+          "description": "GitHub organization name",
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9._-]+$"
+        },
+        "short_name": {
+          "type": "string",
+          "description": "Short name identifier for the repository",
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9._-]+$"
+        },
+        "commit_reference": {
+          "type": "string",
+          "description": "Git commit reference (tag, branch, or commit hash)",
+          "minLength": 1
+        },
+        "annotations_paths": {
+          "type": "array",
+          "description": "Paths to annotation definitions in the repository",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "crd_paths": {
+          "type": "array",
+          "description": "Paths to CRD definitions in the repository",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "cr_paths": {
+          "type": "array",
+          "description": "Paths to custom resource examples in the repository",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Metadata for specific CRDs in this repository",
+          "patternProperties": {
+            "^[a-z0-9]+([a-z0-9\\-]*[a-z0-9])*\\.[a-z0-9\\-]+\\.[a-z0-9\\-\\.]+$": {
+              "$ref": "#/$defs/CRDItem"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "CRDItem": {
+      "type": "object",
+      "description": "Metadata for a specific CRD",
+      "properties": {
+        "owner": {
+          "type": "array",
+          "description": "List of team or individual owners",
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://github\\.com/orgs/[a-zA-Z0-9._-]+/teams/[a-zA-Z0-9._-]+$"
+          },
+          "uniqueItems": true
+        },
+        "topics": {
+          "type": "array",
+          "description": "List of topics/categories this CRD belongs to",
+          "items": {
+            "type": "string",
+            "enum": [
+              "apps",
+              "managementcluster",
+              "workloadcluster"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "provider": {
+          "type": "array",
+          "description": "List of cloud providers this CRD is relevant for",
+          "items": {
+            "type": "string",
+            "enum": [
+              "aws",
+              "azure",
+              "kvm",
+              "openstack",
+              "vsphere"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "Whether this CRD should be hidden from documentation",
+          "default": false
+        },
+        "deprecation": {
+          "$ref": "#/$defs/Deprecation",
+          "description": "Deprecation information for this CRD"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "Deprecation": {
+      "type": "object",
+      "description": "Deprecation information for a CRD",
+      "properties": {
+        "info": {
+          "type": "string",
+          "description": "General deprecation information",
+          "minLength": 1
+        },
+        "replaced_by": {
+          "$ref": "#/$defs/DeprecationReplacedBy",
+          "description": "Information about the replacement CRD"
+        }
+      },
+      "unevaluatedProperties": false,
+      "anyOf": [
+        {
+          "required": ["info"]
+        },
+        {
+          "required": ["replaced_by"]
+        }
+      ]
+    },
+    "DeprecationReplacedBy": {
+      "type": "object",
+      "description": "Information about the CRD that replaces a deprecated one",
+      "required": [
+        "full_name",
+        "short_name"
+      ],
+      "properties": {
+        "full_name": {
+          "type": "string",
+          "description": "Full name of the replacement CRD",
+          "pattern": "^[a-z0-9]+([a-z0-9\\-]*[a-z0-9])*\\.[a-z0-9\\-]+\\.[a-z0-9\\-\\.]+$",
+          "minLength": 1
+        },
+        "short_name": {
+          "type": "string",
+          "description": "Short name of the replacement CRD",
+          "minLength": 1
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  }
+}

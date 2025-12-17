@@ -1,0 +1,6 @@
+---
+description: Rules for updates to the configuration system
+alwaysApply: false
+---
+
+- Make sure the JSON schema /config-schema.json is up-to-date when changing the configuration Go code.
