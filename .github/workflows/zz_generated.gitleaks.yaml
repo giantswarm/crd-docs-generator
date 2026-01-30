@@ -2,7 +2,7 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/1acd23e6a78c21ca61ccbe8a7e5a8a3139feeab5/pkg/gen/input/workflows/internal/file/gitleaks.yaml.template
+#    https://github.com/giantswarm/devctl/blob/87f30fd3b955a0daf6017834a776c222d93a207c/pkg/gen/input/workflows/internal/file/gitleaks.yaml.template
 #
 name: gitleaks
 
@@ -14,3 +14,5 @@ permissions: {}
 jobs:
   publish:
     uses: giantswarm/github-workflows/.github/workflows/gitleaks.yaml@main
+    permissions:
+      contents: read
