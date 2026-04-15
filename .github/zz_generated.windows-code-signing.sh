@@ -4,7 +4,7 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/c1b5bc102e28d8733b8a2a9732af9801430aefff/pkg/gen/input/makefile/internal/file/windows-code-signing.sh.template
+#    https://github.com/giantswarm/devctl/blob/2626dbeab9f4e8b270a36c3cccc75ccc8730b250/pkg/gen/input/makefile/internal/file/windows-code-signing.sh.template
 #
 
 APPLICATION=$1
