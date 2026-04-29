@@ -6,6 +6,7 @@ workflows:
   build-workflow:
     jobs:
     - architect/go-build:
+        context: architect
         name: go-build
         binary: crd-docs-generator
         filters:
