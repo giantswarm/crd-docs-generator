@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Release binaries now include darwin/amd64, darwin/arm64, windows/amd64, and windows/arm64 alongside the existing linux targets. Windows binaries are named `crd-docs-generator-windows-<arch>.exe`.
 - Switched YAML parser from `gopkg.in/yaml.v3` to `github.com/goccy/go-yaml`.
 
 ## [0.11.4] - 2025-04-23
