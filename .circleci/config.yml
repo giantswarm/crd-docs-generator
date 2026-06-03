@@ -29,6 +29,7 @@ workflows:
         platforms: "linux/amd64"
 
     - architect/upload-release-assets:
+        binary: crd-docs-generator
         context: architect
         name: upload-release-assets
         requires:
