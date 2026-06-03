@@ -1,8 +1,10 @@
 FROM gsoci.azurecr.io/giantswarm/alpine:3.23.4
 
+ARG TARGETARCH
+
 RUN apk add --no-cache ca-certificates git
 
-COPY . /opt/crd-docs-generator
+COPY ./crd-docs-generator-linux-${TARGETARCH} /opt/crd-docs-generator/crd-docs-generator
 
 WORKDIR /opt/crd-docs-generator
 
