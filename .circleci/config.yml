@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@9.0.2
+  architect: giantswarm/architect@9.1.0
 
 workflows:
   build-workflow:
@@ -9,6 +9,7 @@ workflows:
         context: architect
         name: go-build
         binary: crd-docs-generator
+        architectures: "linux/amd64,linux/arm64,darwin/amd64,darwin/arm64,windows/amd64,windows/arm64"
         filters:
           tags:
             only: /^v.*/
@@ -25,3 +26,16 @@ workflows:
             ignore:
             - main
             - master
+        platforms: "linux/amd64"
+
+    - architect/upload-release-assets:
+        binary: crd-docs-generator
+        context: architect
+        name: upload-release-assets
+        requires:
+        - go-build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
