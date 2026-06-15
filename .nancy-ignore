@@ -16,3 +16,4 @@ CVE-2026-39828 until=2026-06-27 # golang.org/x/crypto@v0.47.0
 CVE-2026-39830 until=2026-06-27 # golang.org/x/crypto@v0.47.0
 CVE-2026-42508 until=2026-06-27 # golang.org/x/crypto@v0.47.0
 CVE-2026-46597 until=2026-06-27 # golang.org/x/crypto@v0.47.0
+CVE-2026-41178 until=2026-07-15 # go.opentelemetry.io/otel@v1.41.0
