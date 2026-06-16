@@ -2,7 +2,7 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/243afc98a2832b4f85f9b1d99b15fcd2af5dff06/pkg/gen/input/makefile/internal/file/Makefile.gen.go.mk.template
+#    https://github.com/giantswarm/devctl/blob/986ad874b35005734d73e070a8e8bf6b3dc83f7f/pkg/gen/input/makefile/internal/file/Makefile.gen.go.mk.template
 #
 
 PACKAGE_DIR    := ./bin-dist
@@ -15,13 +15,14 @@ MODULE         := $(shell go list -m)
 MAIN_SOURCE    := $(shell if test -e cmd/main.go; then echo cmd/main.go; else echo main.go; fi)
 OS             := $(shell go env GOOS)
 SOURCES        := $(shell find . -name '*.go')
-VERSION        := $(shell architect project version)
+VERSION        := $(shell gitsemver get)
 ifeq ($(OS), linux)
 EXTLDFLAGS := -static
 endif
 LDFLAGS        ?= -w -linkmode 'auto' -extldflags '$(EXTLDFLAGS)' \
-  -X '$(shell go list -m)/pkg/project.buildTimestamp=${BUILDTIMESTAMP}' \
-  -X '$(shell go list -m)/pkg/project.gitSHA=${GITSHA1}'
+  -X '$(MODULE)/pkg/project.version=$(VERSION)' \
+  -X '$(MODULE)/pkg/project.buildTimestamp=$(BUILDTIMESTAMP)' \
+  -X '$(MODULE)/pkg/project.gitSHA=$(GITSHA1)'
 
 .DEFAULT_GOAL := build
 
@@ -158,7 +159,7 @@ vet: ## Run go vet against code.
 .PHONY: nancy
 nancy: ## Runs nancy (requires v1.0.37 or newer).
 	@echo "====> $@"
-	CGO_ENABLED=0 go list -json -deps ./... | nancy sleuth --skip-update-check --quiet --exclude-vulnerability-file ./.nancy-ignore --additional-exclude-vulnerability-files ./.nancy-ignore.generated
+	CGO_ENABLED=0 go list -json -m all | nancy sleuth --skip-update-check --quiet --exclude-vulnerability-file ./.nancy-ignore --additional-exclude-vulnerability-files ./.nancy-ignore.generated
 
 .PHONY: test
 test: ## Runs go test with default values.
