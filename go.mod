@@ -55,3 +55,5 @@ replace golang.org/x/net v0.37.0 => golang.org/x/net v0.39.0
 replace go.opentelemetry.io/otel/sdk v1.40.0 => go.opentelemetry.io/otel/sdk v1.44.0
 
 replace golang.org/x/sys v0.40.0 => golang.org/x/sys v0.46.0
+
+replace golang.org/x/text v0.38.0 => golang.org/x/text v0.40.0
