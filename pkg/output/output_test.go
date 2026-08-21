@@ -15,6 +15,9 @@ import (
 	"github.com/giantswarm/crd-docs-generator/pkg/config"
 )
 
+// firstPropertyName is the schema property name repeated across the fixtures below.
+const firstPropertyName = "first_property"
+
 var (
 	update = flag.Bool("update", false, "update the golden files of this test")
 )
@@ -73,9 +76,9 @@ func TestWritePage(t *testing.T) {
 										Type:        "object",
 										Format:      "",
 										Title:       "Object title",
-										Required:    []string{"first_property"},
+										Required:    []string{firstPropertyName},
 										Properties: map[string]apiextensionsv1.JSONSchemaProps{
-											"first_property": {
+											firstPropertyName: {
 												Description: "First property",
 												Type:        "string",
 												Format:      "",
@@ -95,9 +98,9 @@ func TestWritePage(t *testing.T) {
 										Type:        "object",
 										Format:      "",
 										Title:       "Object title",
-										Required:    []string{"first_property"},
+										Required:    []string{firstPropertyName},
 										Properties: map[string]apiextensionsv1.JSONSchemaProps{
-											"first_property": {
+											firstPropertyName: {
 												Description: "First property",
 												Type:        "string",
 												Format:      "",

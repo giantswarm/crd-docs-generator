@@ -7,6 +7,14 @@ import (
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 
+// JSON Schema type and property names repeated across the fixtures below.
+const (
+	typeObject = "object"
+	typeString = "string"
+
+	requiredStringProp = "required_string"
+)
+
 func TestFlatten(t *testing.T) {
 	type args struct {
 		schema     apiextensionsv1.JSONSchemaProps
@@ -25,13 +33,13 @@ func TestFlatten(t *testing.T) {
 				schema: apiextensionsv1.JSONSchemaProps{
 					ID:          "root",
 					Description: "top description",
-					Type:        "object",
-					Required:    []string{"required_string"},
+					Type:        typeObject,
+					Required:    []string{requiredStringProp},
 					Properties: map[string]apiextensionsv1.JSONSchemaProps{
-						"required_string": {
+						requiredStringProp: {
 							ID:          "the_id",
 							Description: "A required string property",
-							Type:        "string",
+							Type:        typeString,
 						},
 						"optional_array": {
 							Type:        "array",
@@ -39,13 +47,13 @@ func TestFlatten(t *testing.T) {
 							Items: &apiextensionsv1.JSONSchemaPropsOrArray{
 								Schema: &apiextensionsv1.JSONSchemaProps{
 									Description: "Array item",
-									Type:        "string",
+									Type:        typeString,
 								},
 								JSONSchemas: []apiextensionsv1.JSONSchemaProps{},
 							},
 						},
 						"optional_object": {
-							Type: "object",
+							Type: typeObject,
 							Properties: map[string]apiextensionsv1.JSONSchemaProps{
 								"nested_number": {
 									Type: "number",
@@ -71,7 +79,7 @@ func TestFlatten(t *testing.T) {
 					Depth:       1,
 					Path:        ".optional_array[*]",
 					Name:        "optional_array[*]",
-					Type:        "string",
+					Type:        typeString,
 					Description: "Array item",
 					Required:    false,
 				},
@@ -79,7 +87,7 @@ func TestFlatten(t *testing.T) {
 					Depth:       0,
 					Path:        ".optional_object",
 					Name:        "optional_object",
-					Type:        "object",
+					Type:        typeObject,
 					Description: "",
 					Required:    false,
 				},
@@ -94,8 +102,8 @@ func TestFlatten(t *testing.T) {
 				{
 					Depth:       0,
 					Path:        ".required_string",
-					Name:        "required_string",
-					Type:        "string",
+					Name:        requiredStringProp,
+					Type:        typeString,
 					Description: "A required string property",
 					Required:    true,
 				},

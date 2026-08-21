@@ -8,6 +8,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// typeString is the JSON Schema type name repeated across the fixtures below.
+const typeString = "string"
+
 func TestRead(t *testing.T) {
 	type args struct {
 		filePath string
@@ -60,18 +63,18 @@ func TestRead(t *testing.T) {
 										Properties: map[string]apiextensionsv1.JSONSchemaProps{
 											"apiVersion": {
 												Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
-												Type:        "string",
+												Type:        typeString,
 											},
 											"kind": {
 												Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-												Type:        "string",
+												Type:        typeString,
 											},
 											"spec": {
 												Type:     "object",
 												Required: []string{"someString"},
 												Properties: map[string]apiextensionsv1.JSONSchemaProps{
 													"someString": {
-														Type: "string",
+														Type: typeString,
 													},
 												},
 											},
