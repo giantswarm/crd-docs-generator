@@ -35,9 +35,9 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
-	golang.org/x/crypto v0.54.0 // indirect
-	golang.org/x/net v0.57.0 // indirect
-	golang.org/x/text v0.41.0 // indirect
+	golang.org/x/crypto v0.55.0 // indirect
+	golang.org/x/net v0.58.0 // indirect
+	golang.org/x/text v0.42.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
@@ -62,6 +62,6 @@ replace golang.org/x/text v0.38.0 => golang.org/x/text v0.40.0
 // because nothing imports them directly.
 replace golang.org/x/mod => golang.org/x/mod v0.41.0
 
-replace golang.org/x/crypto => golang.org/x/crypto v0.56.0
+replace golang.org/x/crypto => golang.org/x/crypto v0.57.0
 
 replace google.golang.org/grpc v1.82.1 => google.golang.org/grpc v1.83.2
