@@ -48,15 +48,6 @@ require (
 	sigs.k8s.io/structured-merge-diff/v6 v6.4.2 // indirect
 )
 
-// Required until the other dependencies are updated to use the latest version (CVE-2025-22872)
-replace golang.org/x/net v0.37.0 => golang.org/x/net v0.39.0
-
-replace go.opentelemetry.io/otel/sdk v1.40.0 => go.opentelemetry.io/otel/sdk v1.44.0
-
-replace golang.org/x/sys v0.40.0 => golang.org/x/sys v0.46.0
-
-replace golang.org/x/text v0.38.0 => golang.org/x/text v0.40.0
-
 // Pin transitive modules flagged by the OSS Index scan (nancy) in CI.
 // go mod tidy would otherwise resolve them below the fixed versions,
 // because nothing imports them directly.
@@ -65,3 +56,13 @@ replace golang.org/x/mod => golang.org/x/mod v0.41.0
 replace golang.org/x/crypto => golang.org/x/crypto v0.57.0
 
 replace google.golang.org/grpc v1.82.1 => google.golang.org/grpc v1.83.2
+
+// OpenTelemetry modules move in lockstep.
+replace (
+	go.opentelemetry.io/otel => go.opentelemetry.io/otel v1.47.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace => go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.47.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc => go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.47.0
+	go.opentelemetry.io/otel/metric => go.opentelemetry.io/otel/metric v1.47.0
+	go.opentelemetry.io/otel/sdk => go.opentelemetry.io/otel/sdk v1.47.0
+	go.opentelemetry.io/otel/trace => go.opentelemetry.io/otel/trace v1.47.0
+)
