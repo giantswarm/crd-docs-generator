@@ -7,14 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- Release binaries now include darwin/amd64, darwin/arm64, windows/amd64, and windows/arm64 alongside the existing linux targets. Windows binaries are named `crd-docs-generator-windows-<arch>.exe`.
-- Switched YAML parser from `gopkg.in/yaml.v3` to `github.com/goccy/go-yaml`.
+## [0.12.39-rc.2] - 2026-10-05
 
 ### Fixed
 
 - Pin the OpenTelemetry modules to v1.47.0 (CVE-2026-81870) and drop the expired `.nancy-ignore` entries.
+
+## [0.12.0] - 2026-06-16
+
+### Changed
+
+- Release binaries now include darwin/amd64, darwin/arm64, windows/amd64, and windows/arm64 alongside the existing linux targets. Windows binaries are named `crd-docs-generator-windows-<arch>.exe`.
+- Switched YAML parser from `gopkg.in/yaml.v3` to `github.com/goccy/go-yaml`.
 
 ## [0.11.4] - 2025-04-23
 
@@ -139,7 +143,9 @@ All expect array values. Paths are relative to the source repo root. See the `co
 - Use config file for settings instead of flags
 - Switch CI from architect to architect-orb
 
-[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.4...HEAD
+[Unreleased]: https://github.com/giantswarm/crd-docs-generator/compare/v0.12.39-rc.2...HEAD
+[0.12.39-rc.2]: https://github.com/giantswarm/crd-docs-generator/compare/v0.12.0...v0.12.39-rc.2
+[0.12.0]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.4...v0.12.0
 [0.11.4]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/giantswarm/crd-docs-generator/compare/v0.11.1...v0.11.2
