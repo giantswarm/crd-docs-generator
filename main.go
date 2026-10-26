@@ -20,6 +20,7 @@ import (
 	"github.com/giantswarm/crd-docs-generator/pkg/crd"
 	"github.com/giantswarm/crd-docs-generator/pkg/git"
 	"github.com/giantswarm/crd-docs-generator/pkg/output"
+	"github.com/giantswarm/crd-docs-generator/pkg/project"
 )
 
 // CRDDocsGenerator represents an instance of this command line tool, it carries
@@ -44,26 +45,48 @@ const (
 )
 
 func main() {
-	var err error
-
 	var crdDocsGenerator CRDDocsGenerator
-	{
-		c := &cobra.Command{
-			Use:          "crd-docs-generator",
-			Short:        "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
-			SilenceUsage: true,
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return generateCrdDocs(crdDocsGenerator.configFilePath)
-			},
-		}
+	crdDocsGenerator.rootCommand = newRootCommand(&crdDocsGenerator.configFilePath)
 
-		c.PersistentFlags().StringVar(&crdDocsGenerator.configFilePath, "config", "./config.yaml", "Path to the configuration file.")
-		crdDocsGenerator.rootCommand = c
-	}
-
-	if err = crdDocsGenerator.rootCommand.Execute(); err != nil {
+	if err := crdDocsGenerator.rootCommand.Execute(); err != nil {
 		printStackTrace(err)
 		os.Exit(1)
+	}
+}
+
+func newRootCommand(configFilePath *string) *cobra.Command {
+	c := &cobra.Command{
+		Use:          project.Name,
+		Short:        "crd-docs-generator is a command line tool for generating markdown files that document Giant Swarm's custom resources",
+		SilenceUsage: true,
+		Version:      project.VersionLine(),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return generateCrdDocs(*configFilePath)
+		},
+	}
+
+	// Registered up front so cobra parses --version as a bool before resolving
+	// subcommands; otherwise it takes the next argument as the flag's value.
+	c.InitDefaultVersionFlag()
+	c.SetVersionTemplate(`{{printf "` + project.Name + ` version %s\n" .Version}}`)
+	c.PersistentFlags().StringVar(configFilePath, "config", "./config.yaml", "Path to the configuration file.")
+	c.AddCommand(newVersionCmd())
+
+	return c
+}
+
+func newVersionCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "version",
+		Short: "Print the version, commit and build time of crd-docs-generator",
+		Long: `Prints the release version, the git commit and the build time of this
+binary. A build between releases reports Go's pseudo-version; one without any
+version information says dev. Reads no configuration.`,
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", project.Name, project.VersionLine())
+			return err
+		},
 	}
 }
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `crd-docs-generator version` and `crd-docs-generator --version` print the version, commit and build time of the binary, as stamped by the release build. Neither reads the config file.
+
 ### Changed
 
 - Release binaries now include darwin/amd64, darwin/arm64, windows/amd64, and windows/arm64 alongside the existing linux targets. Windows binaries are named `crd-docs-generator-windows-<arch>.exe`.
