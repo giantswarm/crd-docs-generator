@@ -36,6 +36,8 @@ docker run \
 
 Here, the tag `0.11.0` is the version number of the crd-docs-generator release you're going to use. See our GitHub releases for available tags.
 
+Run `crd-docs-generator version` (or `crd-docs-generator --version`) to print the version, commit and build time of a binary. Neither needs a config file.
+
 The volume mapping defines where the generated output will land.
 
 ### Development
