@@ -5,11 +5,21 @@
 # workflow in .circleci/config.yml merges into this file at pipeline runtime.
 version: 2.1
 orbs:
-  architect: giantswarm/architect@10.15.1
+  architect: giantswarm/architect@10.16.7
 
 workflows:
   build:
     jobs:
+    # Resolve the version once, at the start of the workflow, and persist it to
+    # the workspace (.pipeline_version). Every image and chart job requires
+    # this job and builds with that version instead of resolving its own, so a
+    # stable tag landing while the workflow runs (a promote) cannot give the
+    # image and the chart that references it different versions.
+    - architect/pin-version:
+        name: pin-version
+        filters:
+          tags:
+            only: /^v.*/
     - architect/go-build:
         name: go-build
         binary: crd-docs-generator
@@ -69,6 +79,7 @@ workflows:
         # must not attempt the darwin/windows manifests under QEMU.
         platforms: "linux/amd64,linux/arm64"
         requires:
+        - pin-version
         - go-build
         filters:
           branches:
@@ -89,6 +100,7 @@ workflows:
         # build the darwin/windows manifests under QEMU and hangs.
         platforms: "linux/amd64,linux/arm64"
         requires:
+        - pin-version
         - go-build
         filters:
           tags:
